@@ -84,17 +84,22 @@ class myJFrame extends JFrame {
         int score;
         int seconds;
         int ticks; // 200 ticks a second
+		int currentTicks; // 200 ticks a second
+		int combo;
 
 		public myJPanel(KeyList KL1, myJFrame frame1) {
 			KL = KL1;	
 			frame = frame1;
 			setBackground(new Color(230, 100, 200));
             score = 0;
-            seconds = 0;
-            ticks = 0;
+            currentTicks = 0;
+			combo = 0;
+
+			seconds = 0;
+			ticks = 0;
 
             notes = new ArrayList<>();
-			notes.add(new Note(100, 100, 1));
+			song1(notes);
 		}
 		
 		public void notecheck(MouseEvent e) {
@@ -113,7 +118,7 @@ class myJFrame extends JFrame {
             }
 		}
         public int convertToTicks(int s, int t) {
-            return (200 * s) + t;
+            return ((1000 / GAME_SPEED) * s) + t;
         }
 
 		public void startGame() {
@@ -121,6 +126,15 @@ class myJFrame extends JFrame {
 				repaint();
 				try {Thread.sleep(GAME_SPEED);}
 				catch(Exception e) {}
+
+				// between each frame
+				currentTicks++;
+
+				ticks++;
+				if (ticks >= (1000 / GAME_SPEED)) {
+					ticks = 0;
+					seconds++;
+				}
 			}
 		}
 		public void paintComponent(Graphics g) {
@@ -128,12 +142,19 @@ class myJFrame extends JFrame {
 			int x = frame.getWidth();
 			int y = frame.getHeight();
 
+			g.setColor(Color.white);
+			g.setFont(new Font("Sans Serif", Font.BOLD, 30));
+			g.drawString(String.valueOf(seconds), 100, 500);
+			g.drawString(String.valueOf(ticks), 100, 550);
+
             Note n;
+			int noteTicks = 0;
             for (int i = 0; i < notes.size(); i++) {
                 n = notes.get(i);
-                if (!n.over)
-                    n.draw(g);
-                else {
+				noteTicks = convertToTicks(n.sec, n.tick);
+				if (currentTicks >= noteTicks)
+					n.draw(g);
+                if (n.over) {
                     notes.remove(i);
                     i--;
                 }
@@ -152,8 +173,10 @@ class myJFrame extends JFrame {
         int c_smaller;
         int order;
 		boolean over;
+		int sec;
+		int tick;
 
-		public Note(int x1, int y1, int o) {
+		public Note(int x1, int y1, int s, int t, int o) {
 			r = NOTE_SIZE;
             c_r = CIRCLE_SIZE;
             c_smaller = 0;
@@ -161,6 +184,8 @@ class myJFrame extends JFrame {
 			x = x1 + r;
 			y = y1 + r;
             order = o;
+			sec = s;
+			tick = t;
 		}
 
 		public void draw(Graphics g) {
@@ -208,4 +233,31 @@ class myJFrame extends JFrame {
             }
 		}
 	}
+	
+	// songs
+	public void song1(ArrayList<Note> notes) {
+		notes.add(new Note(100, 100, 1, 0, 1));
+		notes.add(new Note(200, 100, 2, 0, 2));
+		notes.add(new Note(300, 100, 3, 0, 3));
+		notes.add(new Note(400, 100, 4, 0, 4));
+		notes.add(new Note(500, 100, 5, 0, 5));
+	}
 }
+
+
+
+/*
+TODO: 
+- Combo
+- Score
+- Audio
+
+Optional:
+- Sliders
+- Spinners
+- Transitions
+- Instructions page
+- Map Selection page
+- Score overview
+- Scoreboard using files?
+*/
