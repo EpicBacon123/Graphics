@@ -4,8 +4,8 @@ import java.awt.*;
 import java.util.*;
 
 public class Main {	
-	public static void main(String[] args) {	    
-		myJFrame frame = new myJFrame();	
+	public static void main(String[] args) {
+		myJFrame frame = new myJFrame();
 		frame.show();
 		frame.startGame();
 	}
@@ -77,14 +77,22 @@ class myJFrame extends JFrame {
 	}
 	
 	class myJPanel extends JPanel {
+        static final int GAME_SPEED = 5;
 		KeyList KL;
 		myJFrame frame;
 		ArrayList<Note> notes;
+        int score;
+        int seconds;
+        int ticks; // 200 ticks a second
 
 		public myJPanel(KeyList KL1, myJFrame frame1) {
 			KL = KL1;	
 			frame = frame1;
-			setBackground(Color.red);
+			setBackground(new Color(230, 100, 200));
+            score = 0;
+            seconds = 0;
+            ticks = 0;
+
             notes = new ArrayList<>();
 			notes.add(new Note(100, 100, 1));
 		}
@@ -104,13 +112,14 @@ class myJFrame extends JFrame {
 			    n.isHit((int)mouse.getX(), (int)mouse.getY());
             }
 		}
+        public int convertToTicks(int s, int t) {
+            return (200 * s) + t;
+        }
 
 		public void startGame() {
 			while(true) {
 				repaint();
-				try {
-					Thread.sleep(5);
-				}
+				try {Thread.sleep(GAME_SPEED);}
 				catch(Exception e) {}
 			}
 		}
@@ -118,19 +127,16 @@ class myJFrame extends JFrame {
 			super.paintComponent(g);
 			int x = frame.getWidth();
 			int y = frame.getHeight();
-			
-			g.setColor(new Color(230, 100, 200));
-			g.fillRect(0, 0, x, y);
 
             Note n;
             for (int i = 0; i < notes.size(); i++) {
                 n = notes.get(i);
                 if (!n.over)
                     n.draw(g);
-                // else {
-                //     notes.remove(i);
-                //     i--;
-                // }
+                else {
+                    notes.remove(i);
+                    i--;
+                }
             }
 		}
 	}
@@ -138,7 +144,7 @@ class myJFrame extends JFrame {
 	class Note {
 		static final int NOTE_SIZE = 50;
 		static final int CIRCLE_SIZE = 60;
-        static final int C_DECREASE = 2;
+        static final int C_DECREASE = 3;
 		int x;
 		int y;
 		int r;
@@ -158,7 +164,8 @@ class myJFrame extends JFrame {
 		}
 
 		public void draw(Graphics g) {
-            if (c_r == 0)
+            // update the outer circle
+            if (c_r <= -10)
                 over = true;
             if (c_smaller >= C_DECREASE) {
                 c_r--;
@@ -169,7 +176,8 @@ class myJFrame extends JFrame {
             Graphics2D g2 = (Graphics2D) g;
             int cr = r + c_r;
             int dia = 2 * cr;
-            g2.setColor(new Color(101, 224, 243, 220));
+            g2.setColor(new Color(101, 224, 243, 180));
+            g2.setStroke(new BasicStroke(2));
             g2.drawOval(x - cr, y - cr, dia, dia);
             c_smaller++;
 
@@ -194,8 +202,10 @@ class myJFrame extends JFrame {
 
 			if (distance > r)
 				over = false;
-			else
+			else {
 				over = true;
+                System.out.println("Hit!");
+            }
 		}
 	}
 }
