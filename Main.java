@@ -79,21 +79,30 @@ class myJFrame extends JFrame {
 	class myJPanel extends JPanel {
 		KeyList KL;
 		myJFrame frame;
-		
-		Note n;
+		ArrayList<Note> notes;
+
 		public myJPanel(KeyList KL1, myJFrame frame1) {
 			KL = KL1;	
 			frame = frame1;
 			setBackground(Color.red);
-			n = new Note(0, 0);
+            notes = new ArrayList<>();
+			notes.add(new Note(100, 100, 1));
 		}
 		
 		public void notecheck(MouseEvent e) {
-			n.isHit(e.getX(), e.getY());
+            Note n;
+            for (int i = 0; i < notes.size(); i++) {
+                n = notes.get(i);
+			    n.isHit(e.getX(), e.getY());
+            }
 		}
 		public void notecheck(KeyEvent e) {
 			Point mouse = MouseInfo.getPointerInfo().getLocation();
-			n.isHit((int)mouse.getX(), (int)mouse.getY());
+            Note n;
+            for (int i = 0; i < notes.size(); i++) {
+                n = notes.get(i);
+			    n.isHit((int)mouse.getX(), (int)mouse.getY());
+            }
 		}
 
 		public void startGame() {
@@ -113,45 +122,80 @@ class myJFrame extends JFrame {
 			g.setColor(new Color(230, 100, 200));
 			g.fillRect(0, 0, x, y);
 
-
-			if (!n.isHit)
-				n.draw(g);
+            Note n;
+            for (int i = 0; i < notes.size(); i++) {
+                n = notes.get(i);
+                if (!n.over)
+                    n.draw(g);
+                // else {
+                //     notes.remove(i);
+                //     i--;
+                // }
+            }
 		}
 	}
 
 	class Note {
-		static final int NOTE_SIZE = 80;
-		static final int CIRCLE_SIZE = 80;
+		static final int NOTE_SIZE = 50;
+		static final int CIRCLE_SIZE = 60;
+        static final int C_DECREASE = 2;
 		int x;
 		int y;
 		int r;
-		boolean isHit;
+        int c_r;
+        int c_smaller;
+        int order;
+		boolean over;
 
-		public Note(int x1, int y1) {
+		public Note(int x1, int y1, int o) {
 			r = NOTE_SIZE;
-			isHit = false;
-			x = x1 + (r/2);
-			y = y1 + (r/2);
+            c_r = CIRCLE_SIZE;
+            c_smaller = 0;
+			over = false;
+			x = x1 + r;
+			y = y1 + r;
+            order = o;
 		}
 
 		public void draw(Graphics g) {
-			g.setColor(Color.white);
-			g.fillOval(x - (r/2), y - (r/2), r, r);
-			g.setColor(Color.gray);
-			g.drawOval(x - (r/2), y - (r/2), r, r);
+            if (c_r == 0)
+                over = true;
+            if (c_smaller >= C_DECREASE) {
+                c_r--;
+                c_smaller = 0;
+            }
+
+            // outer circle
+            Graphics2D g2 = (Graphics2D) g;
+            int cr = r + c_r;
+            int dia = 2 * cr;
+            g2.setColor(new Color(101, 224, 243, 220));
+            g2.drawOval(x - cr, y - cr, dia, dia);
+            c_smaller++;
+
+            // actual circle to hit
+            dia = 2 * r;
+			g2.setColor(new Color(101, 224, 243));
+			g2.fillOval(x - r, y - r, dia, dia);
+
+            // order # + border
+			g2.setColor(Color.white);
+            g2.setFont(new Font("Sans Serif", Font.BOLD, 30));
+            g2.drawString(String.valueOf(order), x - 7, y + 11);
+            g2.setStroke(new BasicStroke(8));
+			g2.drawOval(x - r + 4, y - r + 4, dia - 8, dia - 8);
 		}
 
 		public void isHit(int mx, int my) {
-			System.out.println(mx + ", " + my);
 			int x1 = Math.abs(mx - x);
 			int y1 = Math.abs(my - y);
 			double distance = Math.pow(x1, 2) + Math.pow(y1, 2);
 			distance = Math.sqrt(distance);
-			System.out.println(distance);
-			if (distance > (r / 2))
-				isHit = false;
+
+			if (distance > r)
+				over = false;
 			else
-				isHit = true;
+				over = true;
 		}
 	}
 }
