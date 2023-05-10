@@ -12,6 +12,20 @@ public class Main {
 }
 class myJFrame extends JFrame {
 	myJPanel panel;
+	// game speeds
+	static final int GAME_SPEED = 5;
+	static final int tps = 1000 / GAME_SPEED;
+
+	// circle sizes
+	static final int NOTE_SIZE = 50;
+	static final int CIRCLE_SIZE = 60;
+	static final int C_DECREASE = 3;
+
+	// scoring
+	static final int tickError300 = 0;
+	static final int tickError100 = 1;
+	static final int tickError50 = 2;
+
 	public myJFrame() {
 		setSize(new Dimension(850,600));
 		setExtendedState(JFrame.MAXIMIZED_BOTH);  // stackoverflow - fullscreen
@@ -37,11 +51,11 @@ class myJFrame extends JFrame {
 	public void startGame() {
 		panel.startGame();
 	}
-	private class ExitListener implements ActionListener {
-		public void actionPerformed(ActionEvent e) {
-			System.exit(0);
-		}
-	}
+	// private class ExitListener implements ActionListener {
+	// 	public void actionPerformed(ActionEvent e) {
+	// 		System.exit(0);
+	// 	}
+	// }
 
 	class KeyList implements KeyListener {
 		boolean up, down, left, right, enter, space;
@@ -55,7 +69,7 @@ class myJFrame extends JFrame {
 		}
 		public void keyReleased(KeyEvent e) {}
 		public void keyTyped(KeyEvent e) {
-			Point mouse = MouseInfo.getPointerInfo().getLocation();
+			// Point mouse = MouseInfo.getPointerInfo().getLocation();
 			switch (e.getKeyChar()) {
 				case 'z':
 				case 'Z':
@@ -77,15 +91,15 @@ class myJFrame extends JFrame {
 	}
 	
 	class myJPanel extends JPanel {
-        static final int GAME_SPEED = 5;
 		KeyList KL;
 		myJFrame frame;
 		ArrayList<Note> notes;
         int score;
-        int seconds;
-        int ticks; // 200 ticks a second
 		int currentTicks; // 200 ticks a second
 		int combo;
+
+        int seconds;
+        int ticks; // 200 ticks a second
 
 		public myJPanel(KeyList KL1, myJFrame frame1) {
 			KL = KL1;	
@@ -101,7 +115,7 @@ class myJFrame extends JFrame {
             notes = new ArrayList<>();
 			song1(notes);
 		}
-		
+
 		public void notecheck(MouseEvent e) {
             Note n;
             for (int i = 0; i < notes.size(); i++) {
@@ -118,7 +132,7 @@ class myJFrame extends JFrame {
             }
 		}
         public int convertToTicks(int s, int t) {
-            return ((1000 / GAME_SPEED) * s) + t;
+            return ((tps) * s) + t;
         }
 
 		public void startGame() {
@@ -131,7 +145,7 @@ class myJFrame extends JFrame {
 				currentTicks++;
 
 				ticks++;
-				if (ticks >= (1000 / GAME_SPEED)) {
+				if (ticks >= (tps)) {
 					ticks = 0;
 					seconds++;
 				}
@@ -139,8 +153,6 @@ class myJFrame extends JFrame {
 		}
 		public void paintComponent(Graphics g) {
 			super.paintComponent(g);
-			int x = frame.getWidth();
-			int y = frame.getHeight();
 
 			g.setColor(Color.white);
 			g.setFont(new Font("Sans Serif", Font.BOLD, 30));
@@ -163,9 +175,7 @@ class myJFrame extends JFrame {
 	}
 
 	class Note {
-		static final int NOTE_SIZE = 50;
-		static final int CIRCLE_SIZE = 60;
-        static final int C_DECREASE = 3;
+		final int cDecrease;
 		int x;
 		int y;
 		int r;
@@ -176,23 +186,43 @@ class myJFrame extends JFrame {
 		int sec;
 		int tick;
 
+		// default constructor with coords, time, and order
 		public Note(int x1, int y1, int s, int t, int o) {
 			r = NOTE_SIZE;
             c_r = CIRCLE_SIZE;
+			cDecrease = C_DECREASE;
             c_smaller = 0;
 			over = false;
 			x = x1 + r;
 			y = y1 + r;
             order = o;
-			sec = s;
-			tick = t;
+			int totTicks = ((tps) * s) + t;
+			totTicks -= CIRCLE_SIZE * cDecrease;
+			sec = totTicks / (tps);
+			tick = totTicks % (tps);
+		}
+
+		// 2nd constructor in case slower note
+		public Note(int x1, int y1, int cs, int s, int t, int o) {
+			r = NOTE_SIZE;
+            c_r = CIRCLE_SIZE;
+            c_smaller = 0;
+			cDecrease = cs;
+			over = false;
+			x = x1 + r;
+			y = y1 + r;
+            order = o;
+			int totTicks = ((tps) * s) + t;
+			totTicks -= CIRCLE_SIZE * cDecrease;
+			sec = totTicks / (tps);
+			tick = totTicks % (tps);
 		}
 
 		public void draw(Graphics g) {
             // update the outer circle
-            if (c_r <= -10)
+            if (c_r <= -5)
                 over = true;
-            if (c_smaller >= C_DECREASE) {
+            if (c_smaller >= cDecrease) {
                 c_r--;
                 c_smaller = 0;
             }
