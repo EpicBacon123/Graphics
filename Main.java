@@ -247,7 +247,9 @@ class myJFrame extends JFrame {
 
 
 /*
-TODO: 
+TODO:
+- Change timing of circles so that the s, t is the time to HIT the circles
+- Add in timing of 50s, 100s, 300s
 - Combo
 - Score
 - Audio
