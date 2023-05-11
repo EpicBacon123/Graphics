@@ -1,5 +1,7 @@
+import javax.sound.sampled.*;
 import javax.swing.*;
 import java.awt.event.*;
+import java.io.*;
 import java.awt.*;
 import java.util.*;
 
@@ -115,6 +117,20 @@ class myJFrame extends JFrame {
             notes = new ArrayList<>();
 			if (song == 1) {
 				song1(notes);
+				playSong1();
+			}
+		}
+
+		public void playSong1() {
+			try {
+				AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File("./Senbonzakura.wav").getAbsoluteFile());
+				Clip clip = AudioSystem.getClip();
+				clip.open(audioInputStream);
+				clip.start();
+			}
+			catch(Exception e) {
+				System.out.println("Error with playing sound.");
+				e.printStackTrace();
 			}
 		}
 
@@ -161,6 +177,9 @@ class myJFrame extends JFrame {
 			g.drawString(String.valueOf(seconds), 100, 500);
 			g.drawString(String.valueOf(ticks), 100, 550);
 
+			g.drawString("Score: " + score, 300, 500);
+			g.drawString("Combo: " + combo, 300, 550);
+
             Note n;
 			int noteTicks = 0;
             for (int i = 0; i < notes.size(); i++) {
@@ -199,6 +218,7 @@ class myJFrame extends JFrame {
 		int sec; // timing of s, t
 		int tick;
 
+		int totalTicks;
 		int scoring;
 
 		// default constructor with coords, time, and order
@@ -212,6 +232,7 @@ class myJFrame extends JFrame {
 			y = y1 + r;
             order = o;
 			int totTicks = ((tps) * s) + t;
+			totalTicks = totTicks;
 			totTicks -= CIRCLE_SIZE * cDecrease;
 			sec = totTicks / (tps);
 			tick = totTicks % (tps);
@@ -229,6 +250,7 @@ class myJFrame extends JFrame {
 			y = y1 + r;
             order = o;
 			int totTicks = ((tps) * s) + t;
+			totalTicks = totTicks;
 			totTicks -= CIRCLE_SIZE * cDecrease;
 			sec = totTicks / (tps);
 			tick = totTicks % (tps);
@@ -246,6 +268,7 @@ class myJFrame extends JFrame {
 			y = y1 + r;
             order = o;
 			int totTicks = ((tps) * s) + t;
+			totalTicks = totTicks;
 			totTicks -= CIRCLE_SIZE * cDecrease;
 			sec = totTicks / (tps);
 			tick = totTicks % (tps);
@@ -263,6 +286,7 @@ class myJFrame extends JFrame {
 			y = y1 + r;
             order = o;
 			int totTicks = ((tps) * s) + t;
+			totalTicks = totTicks;
 			totTicks -= CIRCLE_SIZE * cDecrease;
 			sec = totTicks / (tps);
 			tick = totTicks % (tps);
@@ -300,7 +324,7 @@ class myJFrame extends JFrame {
 			g2.drawOval(x - r + 4, y - r + 4, dia - 8, dia - 8);
 		}
 
-		public void isHit(int mx, int my, int gameTicks) {
+		public void isHit(int mx, int my, int gameTicks) { // TODO: INSERT SCORE VALUE
 			int x1 = Math.abs(mx - x);
 			int y1 = Math.abs(my - y);
 			double distance = Math.pow(x1, 2) + Math.pow(y1, 2);
@@ -309,31 +333,52 @@ class myJFrame extends JFrame {
 			if (distance > r)
 				over = false;
 			else {
-				int diffTicks = (tps * sec) + tick; // noteTicks
-				diffTicks = Math.abs(gameTicks - diffTicks); // human error
+				int diffTicks = Math.abs(gameTicks - totalTicks); // human error
+				// g.setColor(Color.white);
+				// g.setFont(new Font("Sans Serif", Font.BOLD, 24));
+
 				if (diffTicks <= hitWindow2[0]) { // 300 pts
 					scoring = 300;
 					over = true;
+					// g.drawString("300", x-10, y + 11);
+					playHitSound();
 				}
 				else if (diffTicks <= hitWindow2[1]) { // 100 pts
 					scoring = 100;
 					over = true;
+					// g.drawString("300", x-10, y + 11);
+					playHitSound();
 				}
 				else if (diffTicks <= hitWindow2[2]) { // 50 pts
 					scoring = 50;
 					over = true;
+					// g.drawString("300", x-10, y + 11);
+					playHitSound();
 				}
             }
+		}
+
+		public void playHitSound() { // TODO: fix hitSound somehow
+			try {
+				// AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File("./hitSound.wav").getAbsoluteFile());
+				// Clip clip = AudioSystem.getClip();
+				// clip.open(audioInputStream);
+				// clip.start();
+			}
+			catch(Exception e) {
+				System.out.println("Error with playing sound.");
+				e.printStackTrace();
+			}
 		}
 	}
 	
 	// songs
 	public void song1(ArrayList<Note> notes) {
-		notes.add(new Note(100, 100, 2, 0, 1));
-		notes.add(new Note(200, 100, 3, 0, 2));
-		notes.add(new Note(300, 100, 4, 0, 3));
-		notes.add(new Note(400, 100, 5, 0, 4));
-		notes.add(new Note(500, 100, 6, 0, 5));
+		notes.add(new Note(100, 100, 3, 0, 1));
+		notes.add(new Note(200, 100, 4, 0, 2));
+		notes.add(new Note(300, 100, 5, 0, 3));
+		notes.add(new Note(400, 100, 6, 0, 4));
+		notes.add(new Note(500, 100, 7, 0, 5));
 	}
 }
 
