@@ -21,10 +21,9 @@ class myJFrame extends JFrame {
 	static final int CIRCLE_SIZE = 60;
 	static final int C_DECREASE = 3;
 
-	// scoring
-	static final int tickError300 = 0;
-	static final int tickError100 = 1;
-	static final int tickError50 = 2;
+	// hit values
+	static final int[] hitWindow2 = {70 / GAME_SPEED, 125 / GAME_SPEED, 180 / GAME_SPEED};
+	// originally: 68, 124, 180 ms
 
 	public myJFrame() {
 		setSize(new Dimension(850,600));
@@ -41,7 +40,7 @@ class myJFrame extends JFrame {
 		addMouseListener(ML);
 		
 		//PANELS
-		panel = new myJPanel(KL, this);
+		panel = new myJPanel(KL, this, 1);
 		Container container = getContentPane();
 		container.add(panel);
 		
@@ -95,13 +94,14 @@ class myJFrame extends JFrame {
 		myJFrame frame;
 		ArrayList<Note> notes;
         int score;
-		int currentTicks; // 200 ticks a second
 		int combo;
+
+		int currentTicks; // 200 ticks a second
 
         int seconds;
         int ticks; // 200 ticks a second
 
-		public myJPanel(KeyList KL1, myJFrame frame1) {
+		public myJPanel(KeyList KL1, myJFrame frame1, int song) {
 			KL = KL1;	
 			frame = frame1;
 			setBackground(new Color(230, 100, 200));
@@ -113,14 +113,16 @@ class myJFrame extends JFrame {
 			ticks = 0;
 
             notes = new ArrayList<>();
-			song1(notes);
+			if (song == 1) {
+				song1(notes);
+			}
 		}
 
 		public void notecheck(MouseEvent e) {
             Note n;
             for (int i = 0; i < notes.size(); i++) {
                 n = notes.get(i);
-			    n.isHit(e.getX(), e.getY());
+			    n.isHit(e.getX(), e.getY(), currentTicks);
             }
 		}
 		public void notecheck(KeyEvent e) {
@@ -128,7 +130,7 @@ class myJFrame extends JFrame {
             Note n;
             for (int i = 0; i < notes.size(); i++) {
                 n = notes.get(i);
-			    n.isHit((int)mouse.getX(), (int)mouse.getY());
+			    n.isHit((int)mouse.getX(), (int)mouse.getY(), currentTicks);
             }
 		}
         public int convertToTicks(int s, int t) {
@@ -167,6 +169,17 @@ class myJFrame extends JFrame {
 				if (currentTicks >= noteTicks)
 					n.draw(g);
                 if (n.over) {
+					if (combo > 0) // if there is a combo, include multiplier
+						score += n.scoring * (1 + ((combo - 1) / 25));
+					else // otherwise just add raw score
+						score += n.scoring;
+
+					if (n.scoring != 0) // if hit the circle
+						combo++; // add to combo
+					else // missed the circle
+						combo = 0; // don't add to combo
+
+					// note is over
                     notes.remove(i);
                     i--;
                 }
@@ -175,16 +188,18 @@ class myJFrame extends JFrame {
 	}
 
 	class Note {
-		final int cDecrease;
-		int x;
+		final int cDecrease; // rate the outer circle moves in
+		int x; // x and y coords
 		int y;
-		int r;
-        int c_r;
-        int c_smaller;
-        int order;
-		boolean over;
-		int sec;
+		int r; // radius of hit-circle
+        int c_r; // radius of outer circle
+        int c_smaller; // counter var for outer circle getting smaller
+        int order; // number in the middle of circle - order to hit it
+		boolean over; // if the beat is over
+		int sec; // timing of s, t
 		int tick;
+
+		int scoring;
 
 		// default constructor with coords, time, and order
 		public Note(int x1, int y1, int s, int t, int o) {
@@ -200,9 +215,10 @@ class myJFrame extends JFrame {
 			totTicks -= CIRCLE_SIZE * cDecrease;
 			sec = totTicks / (tps);
 			tick = totTicks % (tps);
+			scoring = 0;
 		}
 
-		// 2nd constructor in case slower note
+		// 2nd constructor in case slower/faster note
 		public Note(int x1, int y1, int cs, int s, int t, int o) {
 			r = NOTE_SIZE;
             c_r = CIRCLE_SIZE;
@@ -216,11 +232,46 @@ class myJFrame extends JFrame {
 			totTicks -= CIRCLE_SIZE * cDecrease;
 			sec = totTicks / (tps);
 			tick = totTicks % (tps);
+			scoring = 0;
+		}
+
+		// 3rd constructor in case larger/smaller notes
+		public Note(int x1, int y1, double rad, int s, int t, int o) {
+			r = (int)rad;
+            c_r = CIRCLE_SIZE;
+			cDecrease = C_DECREASE;
+            c_smaller = 0;
+			over = false;
+			x = x1 + r;
+			y = y1 + r;
+            order = o;
+			int totTicks = ((tps) * s) + t;
+			totTicks -= CIRCLE_SIZE * cDecrease;
+			sec = totTicks / (tps);
+			tick = totTicks % (tps);
+			scoring = 0;
+		}
+
+		// 4th constructor in case larger/smaller + slower/faster notes
+		public Note(int x1, int y1, double rad, int cs, int s, int t, int o) {
+			r = (int)rad;
+            c_r = CIRCLE_SIZE;
+			cDecrease = cs;
+            c_smaller = 0;
+			over = false;
+			x = x1 + r;
+			y = y1 + r;
+            order = o;
+			int totTicks = ((tps) * s) + t;
+			totTicks -= CIRCLE_SIZE * cDecrease;
+			sec = totTicks / (tps);
+			tick = totTicks % (tps);
+			scoring = 0;
 		}
 
 		public void draw(Graphics g) {
             // update the outer circle
-            if (c_r <= -5)
+            if (c_r <= -2)
                 over = true;
             if (c_smaller >= cDecrease) {
                 c_r--;
@@ -249,7 +300,7 @@ class myJFrame extends JFrame {
 			g2.drawOval(x - r + 4, y - r + 4, dia - 8, dia - 8);
 		}
 
-		public void isHit(int mx, int my) {
+		public void isHit(int mx, int my, int gameTicks) {
 			int x1 = Math.abs(mx - x);
 			int y1 = Math.abs(my - y);
 			double distance = Math.pow(x1, 2) + Math.pow(y1, 2);
@@ -258,19 +309,31 @@ class myJFrame extends JFrame {
 			if (distance > r)
 				over = false;
 			else {
-				over = true;
-                System.out.println("Hit!");
+				int diffTicks = (tps * sec) + tick; // noteTicks
+				diffTicks = Math.abs(gameTicks - diffTicks); // human error
+				if (diffTicks <= hitWindow2[0]) { // 300 pts
+					scoring = 300;
+					over = true;
+				}
+				else if (diffTicks <= hitWindow2[1]) { // 100 pts
+					scoring = 100;
+					over = true;
+				}
+				else if (diffTicks <= hitWindow2[2]) { // 50 pts
+					scoring = 50;
+					over = true;
+				}
             }
 		}
 	}
 	
 	// songs
 	public void song1(ArrayList<Note> notes) {
-		notes.add(new Note(100, 100, 1, 0, 1));
-		notes.add(new Note(200, 100, 2, 0, 2));
-		notes.add(new Note(300, 100, 3, 0, 3));
-		notes.add(new Note(400, 100, 4, 0, 4));
-		notes.add(new Note(500, 100, 5, 0, 5));
+		notes.add(new Note(100, 100, 2, 0, 1));
+		notes.add(new Note(200, 100, 3, 0, 2));
+		notes.add(new Note(300, 100, 4, 0, 3));
+		notes.add(new Note(400, 100, 5, 0, 4));
+		notes.add(new Note(500, 100, 6, 0, 5));
 	}
 }
 
@@ -293,3 +356,8 @@ Optional:
 - Score overview
 - Scoreboard using files?
 */
+
+/*
+Timing: .1 speed
+- 20:00
+ */
