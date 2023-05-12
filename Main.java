@@ -358,12 +358,12 @@ class myJFrame extends JFrame {
             }
 		}
 
-		public void playHitSound() { // TODO: fix hitSound somehow
+		public void playHitSound() {
 			try {
-				// AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File("./hitSound.wav").getAbsoluteFile());
-				// Clip clip = AudioSystem.getClip();
-				// clip.open(audioInputStream);
-				// clip.start();
+				AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File("./hit.wav").getAbsoluteFile());
+				Clip clip = AudioSystem.getClip();
+				clip.open(audioInputStream);
+				clip.start();
 			}
 			catch(Exception e) {
 				System.out.println("Error with playing sound.");
