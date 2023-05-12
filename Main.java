@@ -189,7 +189,7 @@ class myJFrame extends JFrame {
 					n.draw(g);
                 if (n.over) {
 					if (combo > 0) // if there is a combo, include multiplier
-						score += n.scoring * (1 + ((combo - 1) / 25));
+						score += n.scoring * (1 + ((combo - 1) / 25.0));
 					else // otherwise just add raw score
 						score += n.scoring;
 
@@ -206,20 +206,22 @@ class myJFrame extends JFrame {
 		}
 	}
 
-	class Note {
-		final int cDecrease; // rate the outer circle moves in
-		int x; // x and y coords
+	abstract class Beat {
+		int x; // coords
 		int y;
-		int r; // radius of hit-circle
-        int c_r; // radius of outer circle
-        int c_smaller; // counter var for outer circle getting smaller
-        int order; // number in the middle of circle - order to hit it
-		boolean over; // if the beat is over
+		int c_r; // radius of outer circle
+		int c_smaller; // counter var for outer circle getting smaller
+		int order; // number in the middle of circle
+		boolean over; // if beat is over
+		int cDecrease; // rate the outer circle moves in
 		int sec; // timing of s, t
 		int tick;
 
 		int totalTicks;
 		int scoring;
+	}
+	class Note extends Beat {
+		int r; // radius of hit-circle
 
 		// default constructor with coords, time, and order
 		public Note(int x1, int y1, int s, int t, int o) {
@@ -295,21 +297,23 @@ class myJFrame extends JFrame {
 
 		public void draw(Graphics g) {
             // update the outer circle
-            if (c_r <= -2)
+            if (c_r <= -5)
                 over = true;
             if (c_smaller >= cDecrease) {
                 c_r--;
                 c_smaller = 0;
             }
 
-            // outer circle
-            Graphics2D g2 = (Graphics2D) g;
-            int cr = r + c_r;
-            int dia = 2 * cr;
-            g2.setColor(new Color(101, 224, 243, 180));
-            g2.setStroke(new BasicStroke(2));
-            g2.drawOval(x - cr, y - cr, dia, dia);
-            c_smaller++;
+			// outer circle
+			Graphics2D g2 = (Graphics2D) g;
+			int cr = r + c_r;
+			int dia = 2 * cr;
+			if (c_r >= 0) {
+				g2.setColor(new Color(101, 224, 243, 180));
+				g2.setStroke(new BasicStroke(2));
+				g2.drawOval(x - cr, y - cr, dia, dia);
+			}
+			c_smaller++;
 
             // actual circle to hit
             dia = 2 * r;
@@ -372,6 +376,19 @@ class myJFrame extends JFrame {
 		}
 	}
 	
+	class Slider extends Beat {
+		static final int UP = 0;
+		static final int DOWN = 1;
+		static final int LEFT = 2;
+		static final int RIGHT = 3;
+		int orientation;
+		int length;
+		int s_speed;
+		int first; // the 50, 100, 300
+
+		// public Slider(int x, )
+	}
+
 	// songs
 	public void song1(ArrayList<Note> notes) {
 		notes.add(new Note(100, 100, 3, 0, 1));
@@ -385,13 +402,6 @@ class myJFrame extends JFrame {
 
 
 /*
-TODO:
-- Change timing of circles so that the s, t is the time to HIT the circles
-- Add in timing of 50s, 100s, 300s
-- Combo
-- Score
-- Audio
-
 Optional:
 - Sliders
 - Spinners
