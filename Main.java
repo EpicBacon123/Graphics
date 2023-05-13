@@ -95,6 +95,7 @@ class myJFrame extends JFrame {
 		KeyList KL;
 		myJFrame frame;
 		ArrayList<Note> notes;
+		int song;
         int score;
 		int combo;
 
@@ -103,7 +104,7 @@ class myJFrame extends JFrame {
         int seconds;
         int ticks; // 200 ticks a second
 
-		public myJPanel(KeyList KL1, myJFrame frame1, int song) {
+		public myJPanel(KeyList KL1, myJFrame frame1, int s) {
 			KL = KL1;	
 			frame = frame1;
 			setBackground(new Color(230, 100, 200));
@@ -115,10 +116,10 @@ class myJFrame extends JFrame {
 			ticks = 0;
 
             notes = new ArrayList<>();
-			if (song == 1) {
+			if (s == 1) {
 				song1(notes);
-				playSong1();
 			}
+			song = s;
 		}
 
 		public void playSong1() {
@@ -154,21 +155,29 @@ class myJFrame extends JFrame {
         }
 
 		public void startGame() {
-			while(true) {
-				repaint();
-				try {Thread.sleep(GAME_SPEED);}
+			if (song == 1)
+				playSong1();
+
+			long previous = System.currentTimeMillis();
+			long current;
+			while (true) {
+				try {Thread.sleep(1);}
 				catch(Exception e) {}
-
-				// between each frame
-				currentTicks++;
-
-				ticks++;
-				if (ticks >= (tps)) {
-					ticks = 0;
-					seconds++;
+				current = System.currentTimeMillis();
+				while ((current - previous) >= GAME_SPEED) {
+					repaint();
+					currentTicks++;
+					ticks++;
+					if (ticks >= (tps)) {
+						ticks = 0;
+						seconds++;
+					}
+					previous += GAME_SPEED;
 				}
 			}
 		}
+
+
 		public void paintComponent(Graphics g) {
 			super.paintComponent(g);
 
@@ -181,12 +190,11 @@ class myJFrame extends JFrame {
 			g.drawString("Combo: " + combo, 300, 550);
 
             Note n;
-			int noteTicks = 0;
             for (int i = 0; i < notes.size(); i++) {
                 n = notes.get(i);
-				noteTicks = convertToTicks(n.sec, n.tick);
-				if (currentTicks >= noteTicks)
+				if (currentTicks >= n.startTick) {
 					n.draw(g);
+				}
                 if (n.over) {
 					if (combo > 0) // if there is a combo, include multiplier
 						score += n.scoring * (1 + ((combo - 1) / 25.0));
@@ -210,16 +218,18 @@ class myJFrame extends JFrame {
 		int x; // coords
 		int y;
 		int c_r; // radius of outer circle
-		int c_smaller; // counter var for outer circle getting smaller
 		int order; // number in the middle of circle
 		boolean over; // if beat is over
-		int cDecrease; // rate the outer circle moves in
-		int sec; // timing of s, t
-		int tick;
-
-		int totalTicks;
+		int startTick;
+		int hitTick;
 		int scoring;
+		int scoreAnim;
+
+		int c_smaller; // counter var for outer circle getting smaller
+		int cDecrease; // rate the outer circle moves in
 	}
+
+
 	class Note extends Beat {
 		int r; // radius of hit-circle
 
@@ -233,12 +243,12 @@ class myJFrame extends JFrame {
 			x = x1 + r;
 			y = y1 + r;
             order = o;
-			int totTicks = ((tps) * s) + t;
-			totalTicks = totTicks;
+			int totTicks = (tps * s) + t;
+			hitTick = totTicks;
 			totTicks -= CIRCLE_SIZE * cDecrease;
-			sec = totTicks / (tps);
-			tick = totTicks % (tps);
+			startTick = totTicks;
 			scoring = 0;
+			scoreAnim = 0;
 		}
 
 		// 2nd constructor in case slower/faster note
@@ -251,11 +261,10 @@ class myJFrame extends JFrame {
 			x = x1 + r;
 			y = y1 + r;
             order = o;
-			int totTicks = ((tps) * s) + t;
-			totalTicks = totTicks;
+			int totTicks = (tps * s) + t;
+			hitTick = totTicks;
 			totTicks -= CIRCLE_SIZE * cDecrease;
-			sec = totTicks / (tps);
-			tick = totTicks % (tps);
+			startTick = totTicks;
 			scoring = 0;
 		}
 
@@ -269,11 +278,10 @@ class myJFrame extends JFrame {
 			x = x1 + r;
 			y = y1 + r;
             order = o;
-			int totTicks = ((tps) * s) + t;
-			totalTicks = totTicks;
+			int totTicks = (tps * s) + t;
+			hitTick = totTicks;
 			totTicks -= CIRCLE_SIZE * cDecrease;
-			sec = totTicks / (tps);
-			tick = totTicks % (tps);
+			startTick = totTicks;
 			scoring = 0;
 		}
 
@@ -287,25 +295,58 @@ class myJFrame extends JFrame {
 			x = x1 + r;
 			y = y1 + r;
             order = o;
-			int totTicks = ((tps) * s) + t;
-			totalTicks = totTicks;
+			int totTicks = (tps * s) + t;
+			hitTick = totTicks;
 			totTicks -= CIRCLE_SIZE * cDecrease;
-			sec = totTicks / (tps);
-			tick = totTicks % (tps);
+			startTick = totTicks;
 			scoring = 0;
 		}
 
 		public void draw(Graphics g) {
+			Graphics2D g2 = (Graphics2D) g;
             // update the outer circle
-            if (c_r <= -5)
-                over = true;
+            if (c_r <= -5) {
+				if (scoreAnim >= 120) { // stop animation
+					over = true;
+				}
+				scoreAnim++; // increment animation
+				String value;
+
+				if (scoring == 0)
+					value = "X";
+				else {
+					System.out.println(scoring);
+					value = "" + scoring;
+				}
+
+				if (scoreAnim <= 40) { // first 20/100 ticks
+					if (scoring == 0)
+						g.setColor(new Color(227, 27, 27, 6 * scoreAnim));
+					else
+						g.setColor(new Color(256, 256, 256, 6 * scoreAnim));
+				}
+				else if (scoreAnim >= 100) { // last 20/100 ticks
+					if (scoring == 0)
+						g.setColor(new Color(227, 27, 27, 12 * (121 - scoreAnim)));
+					else
+						g.setColor(new Color(256, 256, 256, 12 * (121 - scoreAnim)));
+				}
+				else { // in between
+					if (scoring == 0)
+						g.setColor(new Color(227, 27, 27));
+					else {
+						g.setColor(Color.white);
+					}
+				}
+				g.drawString(value, x - (3 * value.length()), y + 11);
+				return;
+			}
             if (c_smaller >= cDecrease) {
                 c_r--;
                 c_smaller = 0;
             }
 
 			// outer circle
-			Graphics2D g2 = (Graphics2D) g;
 			int cr = r + c_r;
 			int dia = 2 * cr;
 			if (c_r >= 0) {
@@ -328,35 +369,28 @@ class myJFrame extends JFrame {
 			g2.drawOval(x - r + 4, y - r + 4, dia - 8, dia - 8);
 		}
 
-		public void isHit(int mx, int my, int gameTicks) { // TODO: INSERT SCORE VALUE
+		public void isHit(int mx, int my, int gameTicks) {
 			int x1 = Math.abs(mx - x);
 			int y1 = Math.abs(my - y);
 			double distance = Math.pow(x1, 2) + Math.pow(y1, 2);
 			distance = Math.sqrt(distance);
 
-			if (distance > r)
-				over = false;
-			else {
-				int diffTicks = Math.abs(gameTicks - totalTicks); // human error
-				// g.setColor(Color.white);
-				// g.setFont(new Font("Sans Serif", Font.BOLD, 24));
+			if (distance <= r) {
+				int diffTicks = Math.abs(gameTicks - hitTick); // human error
 
 				if (diffTicks <= hitWindow2[0]) { // 300 pts
 					scoring = 300;
 					over = true;
-					// g.drawString("300", x-10, y + 11);
 					playHitSound();
 				}
 				else if (diffTicks <= hitWindow2[1]) { // 100 pts
 					scoring = 100;
 					over = true;
-					// g.drawString("300", x-10, y + 11);
 					playHitSound();
 				}
 				else if (diffTicks <= hitWindow2[2]) { // 50 pts
 					scoring = 50;
 					over = true;
-					// g.drawString("300", x-10, y + 11);
 					playHitSound();
 				}
             }
@@ -386,7 +420,7 @@ class myJFrame extends JFrame {
 		int s_speed;
 		int first; // the 50, 100, 300
 
-		// public Slider(int x, )
+		public Slider(int x1, int y1, int s, int t, int o, int dir) {}
 	}
 
 	// songs
@@ -396,6 +430,10 @@ class myJFrame extends JFrame {
 		notes.add(new Note(300, 100, 5, 0, 3));
 		notes.add(new Note(400, 100, 6, 0, 4));
 		notes.add(new Note(500, 100, 7, 0, 5));
+		notes.add(new Note(600, 100, 20, 0, 6));
+		notes.add(new Note(600, 100, 21, 0, 7));
+		notes.add(new Note(600, 100, 22, 0, 8));
+		notes.add(new Note(600, 100, 23, 0, 9));
 	}
 }
 
@@ -414,5 +452,5 @@ Optional:
 
 /*
 Timing: .1 speed
-- 20:00
+- 2:17
  */
