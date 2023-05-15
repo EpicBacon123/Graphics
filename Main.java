@@ -139,7 +139,8 @@ class myJFrame extends JFrame {
             Note n;
             for (int i = 0; i < notes.size(); i++) {
                 n = notes.get(i);
-			    n.isHit(e.getX(), e.getY(), currentTicks);
+				if (n.hit)
+			    	n.isHit(e.getX(), e.getY(), currentTicks);
             }
 		}
 		public void notecheck(KeyEvent e) {
@@ -147,7 +148,8 @@ class myJFrame extends JFrame {
             Note n;
             for (int i = 0; i < notes.size(); i++) {
                 n = notes.get(i);
-			    n.isHit((int)mouse.getX(), (int)mouse.getY(), currentTicks);
+				if (n.hit)
+			    	n.isHit((int)mouse.getX(), (int)mouse.getY(), currentTicks);
             }
 		}
         public int convertToTicks(int s, int t) {
@@ -220,6 +222,7 @@ class myJFrame extends JFrame {
 		int c_r; // radius of outer circle
 		int order; // number in the middle of circle
 		boolean over; // if beat is over
+		boolean hit;
 		int startTick;
 		int hitTick;
 		int scoring;
@@ -240,6 +243,7 @@ class myJFrame extends JFrame {
 			cDecrease = C_DECREASE;
             c_smaller = 0;
 			over = false;
+			hit = false;
 			x = x1 + r;
 			y = y1 + r;
             order = o;
@@ -305,7 +309,7 @@ class myJFrame extends JFrame {
 		public void draw(Graphics g) {
 			Graphics2D g2 = (Graphics2D) g;
             // update the outer circle
-            if (c_r <= -5) {
+            if (c_r <= -5 || hit) {
 				if (scoreAnim >= 120) { // stop animation
 					over = true;
 				}
@@ -315,7 +319,6 @@ class myJFrame extends JFrame {
 				if (scoring == 0)
 					value = "X";
 				else {
-					System.out.println(scoring);
 					value = "" + scoring;
 				}
 
@@ -323,13 +326,13 @@ class myJFrame extends JFrame {
 					if (scoring == 0)
 						g.setColor(new Color(227, 27, 27, 6 * scoreAnim));
 					else
-						g.setColor(new Color(256, 256, 256, 6 * scoreAnim));
+						g.setColor(new Color(255, 255, 255, 6 * scoreAnim));
 				}
 				else if (scoreAnim >= 100) { // last 20/100 ticks
 					if (scoring == 0)
 						g.setColor(new Color(227, 27, 27, 12 * (121 - scoreAnim)));
 					else
-						g.setColor(new Color(256, 256, 256, 12 * (121 - scoreAnim)));
+						g.setColor(new Color(255, 255, 255, 12 * (121 - scoreAnim)));
 				}
 				else { // in between
 					if (scoring == 0)
@@ -339,8 +342,11 @@ class myJFrame extends JFrame {
 					}
 				}
 				g.drawString(value, x - (3 * value.length()), y + 11);
-				return;
+				if (scoreAnim > 0)
+					return;
 			}
+
+			// decrease circle size
             if (c_smaller >= cDecrease) {
                 c_r--;
                 c_smaller = 0;
@@ -358,11 +364,12 @@ class myJFrame extends JFrame {
 
             // actual circle to hit
             dia = 2 * r;
-			g2.setColor(new Color(101, 224, 243));
+			System.out.println("ScoreAnim: " + scoreAnim);
+			g2.setColor(new Color(101, 224, 243, 255 - (scoreAnim * 6)));
 			g2.fillOval(x - r, y - r, dia, dia);
 
             // order # + border
-			g2.setColor(Color.white);
+			g2.setColor(new Color(255, 255, 255, 255 - (scoreAnim * 6)));
             g2.setFont(new Font("Sans Serif", Font.BOLD, 30));
             g2.drawString(String.valueOf(order), x - 7, y + 11);
             g2.setStroke(new BasicStroke(8));
@@ -380,17 +387,17 @@ class myJFrame extends JFrame {
 
 				if (diffTicks <= hitWindow2[0]) { // 300 pts
 					scoring = 300;
-					over = true;
+					hit = true;
 					playHitSound();
 				}
 				else if (diffTicks <= hitWindow2[1]) { // 100 pts
 					scoring = 100;
-					over = true;
+					hit = true;
 					playHitSound();
 				}
 				else if (diffTicks <= hitWindow2[2]) { // 50 pts
 					scoring = 50;
-					over = true;
+					hit = true;
 					playHitSound();
 				}
             }
