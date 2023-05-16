@@ -24,7 +24,7 @@ class myJFrame extends JFrame {
 	static final int C_DECREASE = 3;
 
 	// hit values
-	static final int[] hitWindow2 = {70 / GAME_SPEED, 125 / GAME_SPEED, 180 / GAME_SPEED};
+	static final int[] hitWindow2 = {60 / GAME_SPEED, 115 / GAME_SPEED, 170 / GAME_SPEED};
 	// originally: 68, 124, 180 ms
 
 	public myJFrame() {
@@ -94,7 +94,7 @@ class myJFrame extends JFrame {
 	class myJPanel extends JPanel {
 		KeyList KL;
 		myJFrame frame;
-		ArrayList<Note> notes;
+		ArrayList<Beat> notes;
 		int song;
         int score;
 		int combo;
@@ -136,7 +136,7 @@ class myJFrame extends JFrame {
 		}
 
 		public void notecheck(MouseEvent e) {
-            Note n;
+            Beat n;
             for (int i = 0; i < notes.size(); i++) {
                 n = notes.get(i);
 				if (!n.hit)
@@ -145,7 +145,7 @@ class myJFrame extends JFrame {
 		}
 		public void notecheck(KeyEvent e) {
 			Point mouse = MouseInfo.getPointerInfo().getLocation();
-            Note n;
+            Beat n;
             for (int i = 0; i < notes.size(); i++) {
                 n = notes.get(i);
 				if (!n.hit)
@@ -182,16 +182,21 @@ class myJFrame extends JFrame {
 
 		public void paintComponent(Graphics g) {
 			super.paintComponent(g);
+			int maxX = (int)getSize().getWidth();
+			int maxY = (int)getSize().getHeight();
+			String adjScore = String.valueOf(score);
+			while (adjScore.length() < 10)
+				adjScore = "0" + adjScore;
 
 			g.setColor(Color.white);
 			g.setFont(new Font("Ubuntu", Font.BOLD, 30));
-			g.drawString(String.valueOf(seconds), 100, 500);
-			g.drawString(String.valueOf(ticks), 100, 550);
+			g.drawString(String.valueOf(seconds / 60), 100, 500);
+			g.drawString(String.valueOf(seconds % 60), 100, 550);
 
-			g.drawString("Score:\t" + score, 300, 500);
-			g.drawString("Combo:\t" + combo, 300, 550);
+			g.drawString(adjScore, maxX - 200, 50);
+			g.drawString(combo + "x", 50, maxY - 50);
 
-            Note n;
+            Beat n;
             for (int i = 0; i < notes.size(); i++) {
                 n = notes.get(i);
 				if (currentTicks >= n.startTick) {
@@ -231,6 +236,9 @@ class myJFrame extends JFrame {
 
 		int c_smaller; // counter var for outer circle getting smaller
 		int cDecrease; // rate the outer circle moves in
+
+		public void isHit(int mx, int my, int gametick) {}
+		public void draw(Graphics g) {}
 	}
 
 
@@ -327,30 +335,41 @@ class myJFrame extends JFrame {
 				if (scoreAnim <= 40) { // first 20/100 ticks
 					if (scoring == 0)
 						g.setColor(new Color(227, 27, 27, 6 * scoreAnim));
-					else
-						g.setColor(new Color(255, 255, 255, 6 * scoreAnim));
+					else if (scoring == 50)
+						g.setColor(new Color(68, 164, 219, 6 * scoreAnim));
+					else if (scoring == 100)
+						g.setColor(new Color(79, 219, 135, 6 * scoreAnim));
+					else if (scoring == 300)
+						g.setColor(new Color(73, 92, 201, 6 * scoreAnim));
 				}
 				else if (scoreAnim >= 100) { // last 20/100 ticks
 					if (scoring == 0)
 						g.setColor(new Color(227, 27, 27, 12 * (121 - scoreAnim)));
-					else
-						g.setColor(new Color(255, 255, 255, 12 * (121 - scoreAnim)));
+						else if (scoring == 50)
+							g.setColor(new Color(68, 164, 219, 12 * (121 - scoreAnim)));
+						else if (scoring == 100)
+							g.setColor(new Color(79, 219, 135, 12 * (121 - scoreAnim)));
+						else if (scoring == 300)
+							g.setColor(new Color(73, 92, 201, 12 * (121 - scoreAnim)));
 				}
 				else { // in between
 					if (scoring == 0)
 						g.setColor(new Color(227, 27, 27));
-					else {
-						g.setColor(Color.white);
-					}
+						else if (scoring == 50)
+							g.setColor(new Color(68, 164, 219));
+						else if (scoring == 100)
+							g.setColor(new Color(79, 219, 135));
+						else if (scoring == 300)
+							g.setColor(new Color(73, 92, 201));
 				}
-				g.drawString(value, x - (9 * value.length()), y + 11);
-				if (scoreAnim >= 40) {
+				g.drawString(value, x - (9 * value.length()), y + 11); // draw the scoring
+				if (scoreAnim >= 40) { // if after 40 seconds, don't draw circle (faded out already)
 					return;
 				}
 			}
 
 
-            if (c_smaller >= cDecrease) {
+            if (c_smaller >= cDecrease) { // decrease outer circle size
                 c_r--;
                 c_smaller = 0;
             }
@@ -445,7 +464,7 @@ class myJFrame extends JFrame {
 	}
 
 	// songs
-	public void song1(ArrayList<Note> notes) {
+	public void song1(ArrayList<Beat> notes) {
 		notes.add(new Note(100, 100, 3, 0, 1));
 		notes.add(new Note(200, 100, 4, 0, 2));
 		notes.add(new Note(300, 100, 5, 0, 3));
