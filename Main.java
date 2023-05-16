@@ -139,7 +139,7 @@ class myJFrame extends JFrame {
             Note n;
             for (int i = 0; i < notes.size(); i++) {
                 n = notes.get(i);
-				if (n.hit)
+				if (!n.hit)
 			    	n.isHit(e.getX(), e.getY(), currentTicks);
             }
 		}
@@ -148,7 +148,7 @@ class myJFrame extends JFrame {
             Note n;
             for (int i = 0; i < notes.size(); i++) {
                 n = notes.get(i);
-				if (n.hit)
+				if (!n.hit)
 			    	n.isHit((int)mouse.getX(), (int)mouse.getY(), currentTicks);
             }
 		}
@@ -184,12 +184,12 @@ class myJFrame extends JFrame {
 			super.paintComponent(g);
 
 			g.setColor(Color.white);
-			g.setFont(new Font("Sans Serif", Font.BOLD, 30));
+			g.setFont(new Font("Ubuntu", Font.BOLD, 30));
 			g.drawString(String.valueOf(seconds), 100, 500);
 			g.drawString(String.valueOf(ticks), 100, 550);
 
-			g.drawString("Score: " + score, 300, 500);
-			g.drawString("Combo: " + combo, 300, 550);
+			g.drawString("Score:\t" + score, 300, 500);
+			g.drawString("Combo:\t" + combo, 300, 550);
 
             Note n;
             for (int i = 0; i < notes.size(); i++) {
@@ -227,6 +227,7 @@ class myJFrame extends JFrame {
 		int hitTick;
 		int scoring;
 		int scoreAnim;
+		int fadeIn;
 
 		int c_smaller; // counter var for outer circle getting smaller
 		int cDecrease; // rate the outer circle moves in
@@ -248,11 +249,12 @@ class myJFrame extends JFrame {
 			y = y1 + r;
             order = o;
 			int totTicks = (tps * s) + t;
-			hitTick = totTicks;
+			hitTick = totTicks + 5;
 			totTicks -= CIRCLE_SIZE * cDecrease;
 			startTick = totTicks;
 			scoring = 0;
 			scoreAnim = 0;
+			fadeIn = 0;
 		}
 
 		// 2nd constructor in case slower/faster note
@@ -309,7 +311,7 @@ class myJFrame extends JFrame {
 		public void draw(Graphics g) {
 			Graphics2D g2 = (Graphics2D) g;
             // update the outer circle
-            if (c_r <= -5 || hit) {
+            if (c_r <= -1 * hitWindow2[2] / cDecrease || hit) {
 				if (scoreAnim >= 120) { // stop animation
 					over = true;
 				}
@@ -341,12 +343,13 @@ class myJFrame extends JFrame {
 						g.setColor(Color.white);
 					}
 				}
-				g.drawString(value, x - (3 * value.length()), y + 11);
-				if (scoreAnim > 0)
+				g.drawString(value, x - (9 * value.length()), y + 11);
+				if (scoreAnim >= 40) {
 					return;
+				}
 			}
 
-			// decrease circle size
+
             if (c_smaller >= cDecrease) {
                 c_r--;
                 c_smaller = 0;
@@ -364,12 +367,23 @@ class myJFrame extends JFrame {
 
             // actual circle to hit
             dia = 2 * r;
-			System.out.println("ScoreAnim: " + scoreAnim);
-			g2.setColor(new Color(101, 224, 243, 255 - (scoreAnim * 6)));
+			if (fadeIn < 40)
+				g2.setColor(new Color(101, 224, 243, 6 * fadeIn));
+			else if (scoring > 0 || c_r <= 0)
+				g2.setColor(new Color(101, 224, 243, 255 - (6 * scoreAnim)));
+			else
+				g2.setColor(new Color(101, 224, 243));
 			g2.fillOval(x - r, y - r, dia, dia);
 
             // order # + border
-			g2.setColor(new Color(255, 255, 255, 255 - (scoreAnim * 6)));
+			if (fadeIn < 40) {
+				g2.setColor(new Color(255, 255, 255, 6 * fadeIn));
+				fadeIn++;
+			}
+			else if (scoring > 0 || c_r <= 0)
+				g2.setColor(new Color(255, 255, 255, 255 - (6 * scoreAnim)));
+			else
+				g2.setColor(Color.white);
             g2.setFont(new Font("Sans Serif", Font.BOLD, 30));
             g2.drawString(String.valueOf(order), x - 7, y + 11);
             g2.setStroke(new BasicStroke(8));
