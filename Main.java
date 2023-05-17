@@ -185,16 +185,19 @@ class myJFrame extends JFrame {
 			int maxX = (int)getSize().getWidth();
 			int maxY = (int)getSize().getHeight();
 			String adjScore = String.valueOf(score);
+			String adjTime = String.valueOf(seconds % 60);
+			if (adjTime.length() < 2)
+				adjTime = "0" + adjTime;
+			adjTime = (seconds / 60) + ":" + adjTime;
 			while (adjScore.length() < 10)
 				adjScore = "0" + adjScore;
 
 			g.setColor(Color.white);
-			g.setFont(new Font("Ubuntu", Font.BOLD, 30));
-			g.drawString(String.valueOf(seconds / 60), 100, 500);
-			g.drawString(String.valueOf(seconds % 60), 100, 550);
-
+			g.setFont(new Font("Trebuchet MS", Font.BOLD, 30));
 			g.drawString(adjScore, maxX - 200, 50);
-			g.drawString(combo + "x", 50, maxY - 50);
+			g.drawString(combo + "X", 50, maxY - 30);
+			g.setFont(new Font("Trebuchet MS", Font.PLAIN, 26));
+			g.drawString(adjTime, maxX - 100, maxY - 30);
 
             Beat n;
             for (int i = 0; i < notes.size(); i++) {
@@ -202,7 +205,7 @@ class myJFrame extends JFrame {
 				if (currentTicks >= n.startTick) {
 					n.draw(g);
 				}
-                if (n.over) {
+                if (n.hit && !n.scoreAdded) {
 					if (combo > 0) // if there is a combo, include multiplier
 						score += n.scoring * (1 + ((combo - 1) / 25.0));
 					else // otherwise just add raw score
@@ -210,7 +213,11 @@ class myJFrame extends JFrame {
 
 					if (n.scoring != 0) // if hit the circle
 						combo++; // add to combo
-					else // missed the circle
+					n.scoreAdded = true;
+				}
+
+				if (n.over || n.hitTick < 0) { // done animating
+					if (!n.hit) // missed circle
 						combo = 0; // don't add to combo
 
 					// note is over
@@ -228,6 +235,7 @@ class myJFrame extends JFrame {
 		int order; // number in the middle of circle
 		boolean over; // if beat is over
 		boolean hit;
+		boolean scoreAdded;
 		int startTick;
 		int hitTick;
 		int scoring;
@@ -253,6 +261,7 @@ class myJFrame extends JFrame {
             c_smaller = 0;
 			over = false;
 			hit = false;
+			scoreAdded = false;
 			x = x1 + r;
 			y = y1 + r;
             order = o;
@@ -318,6 +327,7 @@ class myJFrame extends JFrame {
 
 		public void draw(Graphics g) {
 			Graphics2D g2 = (Graphics2D) g;
+            g2.setFont(new Font("Trebuchet MS", Font.BOLD, 30));
             // update the outer circle
             if (c_r <= -1 * hitWindow2[2] / cDecrease || hit) {
 				if (scoreAnim >= 120) { // stop animation
@@ -403,7 +413,6 @@ class myJFrame extends JFrame {
 				g2.setColor(new Color(255, 255, 255, 255 - (6 * scoreAnim)));
 			else
 				g2.setColor(Color.white);
-            g2.setFont(new Font("Sans Serif", Font.BOLD, 30));
             g2.drawString(String.valueOf(order), x - 7, y + 11);
             g2.setStroke(new BasicStroke(8));
 			g2.drawOval(x - r + 4, y - r + 4, dia - 8, dia - 8);
@@ -465,6 +474,7 @@ class myJFrame extends JFrame {
 
 	// songs
 	public void song1(ArrayList<Beat> notes) {
+		notes.add(new Note(0, 0, -10, 0, 0));
 		notes.add(new Note(100, 100, 3, 0, 1));
 		notes.add(new Note(200, 100, 4, 0, 2));
 		notes.add(new Note(300, 100, 5, 0, 3));
@@ -494,3 +504,11 @@ Optional:
 Timing: .1 speed
 - 2:17
  */
+
+/* 
+Possible fonts:
+- Calibri
+- Corbel
+- SansSerif
+- Trebuchet MS
+*/
