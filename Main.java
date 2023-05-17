@@ -1,9 +1,12 @@
+import javax.imageio.ImageIO;
 import javax.sound.sampled.*;
 import javax.swing.*;
 import java.awt.event.*;
 import java.io.*;
 import java.awt.*;
+import java.awt.image.*;
 import java.util.*;
+// import javafx.BackgroundImage;
 
 public class Main {	
 	public static void main(String[] args) {
@@ -62,7 +65,7 @@ class myJFrame extends JFrame {
 		boolean up, down, left, right, enter, space;
 		public void keyPressed(KeyEvent e) {
 			switch(e.getKeyCode()) {
-				case 27:	
+				case 27:
 				case KeyEvent.VK_E:
 					System.exit(0);
 					break;
@@ -103,11 +106,16 @@ class myJFrame extends JFrame {
 
         int seconds;
         int ticks; // 200 ticks a second
+		BufferedImage bg;
 
 		public myJPanel(KeyList KL1, myJFrame frame1, int s) {
 			KL = KL1;	
 			frame = frame1;
-			setBackground(new Color(230, 100, 200));
+			try {
+				bg = ImageIO.read(new File("bg.png"));
+			}
+			catch(Exception e) {}
+			setBackground(new Color(250, 180, 220));
             score = 0;
             currentTicks = 0;
 			combo = 0;
@@ -162,6 +170,7 @@ class myJFrame extends JFrame {
 
 			long previous = System.currentTimeMillis();
 			long current;
+
 			while (true) {
 				try {Thread.sleep(1);}
 				catch(Exception e) {}
@@ -184,6 +193,9 @@ class myJFrame extends JFrame {
 			super.paintComponent(g);
 			int maxX = (int)getSize().getWidth();
 			int maxY = (int)getSize().getHeight();
+
+            // g.drawImage(bg, 0, 0, maxX, maxY, this);
+
 			String adjScore = String.valueOf(score);
 			String adjTime = String.valueOf(seconds % 60);
 			if (adjTime.length() < 2)
