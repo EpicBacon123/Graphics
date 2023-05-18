@@ -23,11 +23,13 @@ class myJFrame extends JFrame {
 
 	// circle sizes
 	static final int NOTE_SIZE = 50;
-	static final int CIRCLE_SIZE = 60;
+	static final int CIRCLE_SIZE = 70;
 	static final int C_DECREASE = 3;
 
 	// hit values
 	static final int[] hitWindow2 = {60 / GAME_SPEED, 115 / GAME_SPEED, 170 / GAME_SPEED};
+	static final int metronome = 78;
+	static final int offset = 187;
 	// originally: 68, 124, 180 ms
 
 	public myJFrame() {
@@ -106,15 +108,16 @@ class myJFrame extends JFrame {
 
         int seconds;
         int ticks; // 200 ticks a second
-		BufferedImage bg;
+		// BufferedImage bg;
+		int temp;
 
 		public myJPanel(KeyList KL1, myJFrame frame1, int s) {
 			KL = KL1;	
 			frame = frame1;
-			try {
-				bg = ImageIO.read(new File("bg.png"));
-			}
-			catch(Exception e) {}
+			// try {
+			// 	bg = ImageIO.read(new File("bg.png"));
+			// }
+			// catch(Exception e) {}
 			setBackground(new Color(250, 180, 220));
             score = 0;
             currentTicks = 0;
@@ -128,6 +131,9 @@ class myJFrame extends JFrame {
 				song1(notes);
 			}
 			song = s;
+
+
+			temp = metronome;
 		}
 
 		public void playSong1() {
@@ -211,6 +217,10 @@ class myJFrame extends JFrame {
 			g.setFont(new Font("Trebuchet MS", Font.PLAIN, 26));
 			g.drawString(adjTime, maxX - 100, maxY - 30);
 
+			if (currentTicks >= offset && currentTicks % metronome == (offset % metronome)) { // start including hit sounds
+					playHitSound();
+			}
+
             Beat n;
             for (int i = 0; i < notes.size(); i++) {
                 n = notes.get(i);
@@ -237,6 +247,19 @@ class myJFrame extends JFrame {
                     i--;
                 }
             }
+		}
+
+		public void playHitSound() { // temp
+			try {
+				AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File("./hit.wav").getAbsoluteFile());
+				Clip clip = AudioSystem.getClip();
+				clip.open(audioInputStream);
+				clip.start();
+			}
+			catch(Exception e) {
+				System.out.println("Error with playing sound.");
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -278,7 +301,7 @@ class myJFrame extends JFrame {
 			y = y1 + r;
             order = o;
 			int totTicks = (tps * s) + t;
-			hitTick = totTicks + 5;
+			hitTick = totTicks;
 			totTicks -= CIRCLE_SIZE * cDecrease;
 			startTick = totTicks;
 			scoring = 0;
@@ -402,7 +425,7 @@ class myJFrame extends JFrame {
 			if (c_r >= 0) {
 				g2.setColor(new Color(101, 224, 243, 180));
 				g2.setStroke(new BasicStroke(2));
-				g2.drawOval(x - cr, y - cr, dia, dia);
+				g2.drawOval(x - cr + 5, y - cr + 5, dia - 10, dia - 10);
 			}
 			c_smaller++;
 
@@ -437,7 +460,9 @@ class myJFrame extends JFrame {
 			distance = Math.sqrt(distance);
 
 			if (distance <= r) {
-				int diffTicks = Math.abs(gameTicks - hitTick); // human error
+				int diffTicks = gameTicks - hitTick; // human error
+				System.out.println("Note " + order + ": " + diffTicks + "\t" + c_r);
+				diffTicks = Math.abs(diffTicks);
 
 				if (diffTicks <= hitWindow2[0]) { // 300 pts
 					scoring = 300;
@@ -486,16 +511,18 @@ class myJFrame extends JFrame {
 
 	// songs
 	public void song1(ArrayList<Beat> notes) {
-		notes.add(new Note(0, 0, -10, 0, 0));
-		notes.add(new Note(100, 100, 3, 0, 1));
-		notes.add(new Note(200, 100, 4, 0, 2));
-		notes.add(new Note(300, 100, 5, 0, 3));
-		notes.add(new Note(400, 100, 6, 0, 4));
-		notes.add(new Note(500, 100, 7, 0, 5));
-		notes.add(new Note(600, 100, 20, 0, 6));
-		notes.add(new Note(600, 100, 21, 0, 7));
-		notes.add(new Note(600, 100, 22, 0, 8));
-		notes.add(new Note(600, 100, 23, 0, 9));
+		// every 78 ticks = 1 beat
+		// abt 154 bpm
+		notes.add(new Note(0, 0, -10, 0, 0)); // insignificant
+		notes.add(new Note(100, 100, 4, 180, 1)); // 980
+		notes.add(new Note(200, 100, 6, 105, 2)); // 1305
+		notes.add(new Note(300, 100, 9, 100, 3)); // 1900
+		notes.add(new Note(400, 100, 11, 165, 4)); // 2365
+		// notes.add(new Note(500, 100, 7, 0, 5));
+		// notes.add(new Note(600, 100, 20, 0, 6));
+		// notes.add(new Note(600, 100, 21, 0, 7));
+		// notes.add(new Note(600, 100, 22, 0, 8));
+		// notes.add(new Note(600, 100, 23, 0, 9));
 	}
 }
 
