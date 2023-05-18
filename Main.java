@@ -17,6 +17,7 @@ public class Main {
 }
 class myJFrame extends JFrame {
 	myJPanel panel;
+	menuPage menu;
 	// game speeds
 	static final int GAME_SPEED = 5;
 	static final int tps = 1000 / GAME_SPEED;
@@ -96,6 +97,32 @@ class myJFrame extends JFrame {
 		public void mouseExited(MouseEvent e) {}
 	}
 	
+	class menuPage extends JPanel {
+		KeyList KL;
+		myJFrame frame;
+		
+		public menuPage(KeyList KL1, myJFrame frame1) {
+			KL = KL1;
+			frame = frame1;
+		}
+
+		public void startGame() {
+			while (true) {
+				try {
+					Thread.sleep(1);
+				}
+				catch (Exception e) {}
+				repaint();
+			}
+		}
+
+		public void paintComponent(Graphics g) {
+			super.paintComponent(g);
+
+			//
+		}
+	}
+
 	class myJPanel extends JPanel {
 		KeyList KL;
 		myJFrame frame;
@@ -217,9 +244,9 @@ class myJFrame extends JFrame {
 			g.setFont(new Font("Trebuchet MS", Font.PLAIN, 26));
 			g.drawString(adjTime, maxX - 100, maxY - 30);
 
-			if (currentTicks >= offset && currentTicks % metronome == (offset % metronome)) { // start including hit sounds
-					playHitSound();
-			}
+			// if (currentTicks >= offset && currentTicks % metronome == (offset % metronome)) { // start including hit sounds
+			// 		playHitSound();
+			// }
 
             Beat n;
             for (int i = 0; i < notes.size(); i++) {
