@@ -8,7 +8,7 @@ import java.awt.image.*;
 import java.util.*;
 // import javafx.BackgroundImage;
 
-public class Main {	
+public class Main {
 	public static void main(String[] args) {
 		myJFrame frame = new myJFrame();
 		frame.show();
@@ -298,7 +298,8 @@ class myJFrame extends JFrame {
 			}
 
 			else if (stats) {
-				//
+				String text = "";
+				return;
 			}
 
 			String adjScore = String.valueOf(score);
@@ -624,15 +625,29 @@ class myJFrame extends JFrame {
 		// every 78 ticks = 1 beat
 		// abt 154 bpm
 		notes.add(new Note(0, 0, -10, 0, 0)); // insignificant
-		notes.add(new Note(100, 100, 4, 180, 1)); // 980
-		notes.add(new Note(200, 100, 6, 105, 2)); // 1305
-		notes.add(new Note(300, 100, 9, 100, 3)); // 1900
-		notes.add(new Note(400, 100, 11, 165, 4)); // 2365
-		// notes.add(new Note(500, 100, 7, 0, 5));
-		// notes.add(new Note(600, 100, 20, 0, 6));
-		// notes.add(new Note(600, 100, 21, 0, 7));
-		// notes.add(new Note(600, 100, 22, 0, 8));
-		// notes.add(new Note(600, 100, 23, 0, 9));
+		notes.add(new Note(100, 100, 4, 190, 1)); // 980
+		notes.add(new Note(200, 100, 6, 100, 2)); // 1305
+		notes.add(new Note(300, 100, 9, 105, 3)); // 1905
+		notes.add(new Note(400, 100, 11, 170, 4)); // 2370
+		notes.add(new Note(400, 300, 13, 90, 1)); // 2685
+		notes.add(new Note(600, 300, 15, 0, 2)); // 2980
+		notes.add(new Note(600, 100, 15, 150, 3)); // 3150
+		notes.add(new Note(800, 300, 16, 100, 4)); // 3300
+		notes.add(new Note(1000, 500, 17, 60, 5)); // 3450
+		notes.add(new Note(1000, 600, 17, 120, 1)); // 3530
+		notes.add(new Note(1000, 700, 18, 10, 2)); // 3610
+		notes.add(new Note(1000, 600, 18, 110, 3)); // 3700
+		// notes.add(new Note(1000, 600, 17, 120, 6)); // 3530
+		// notes.add(new Note(1000, 600, 17, 120, 6)); // 3530
+		// notes.add(new Note(1000, 600, 17, 120, 6)); // 3530
+		// notes.add(new Note(1000, 600, 17, 120, 6)); // 3530
+		// notes.add(new Note(1000, 600, 17, 120, 6)); // 3530
+		// notes.add(new Note(1000, 600, 17, 120, 6)); // 3530
+		// notes.add(new Note(1000, 600, 17, 120, 6)); // 3530
+		// notes.add(new Note(1000, 600, 17, 120, 6)); // 3530
+		// notes.add(new Note(1000, 600, 17, 120, 6)); // 3530
+		// notes.add(new Note(1000, 600, 17, 120, 6)); // 3530
+		// notes.add(new Note(1000, 600, 17, 120, 6)); // 3530
 	}
 }
 
