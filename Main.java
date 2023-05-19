@@ -17,7 +17,9 @@ public class Main {
 }
 class myJFrame extends JFrame {
 	myJPanel panel;
-	menuPage menu;
+	// menuPage menu;
+	int maxX;
+	int maxY;
 	// game speeds
 	static final int GAME_SPEED = 5;
 	static final int tps = 1000 / GAME_SPEED;
@@ -54,6 +56,8 @@ class myJFrame extends JFrame {
 		
 		repaint();
 		
+		maxX = (int)getSize().getWidth();
+		maxY = (int)getSize().getHeight();
 	}
 	public void startGame() {
 		panel.startGame();
@@ -82,6 +86,10 @@ class myJFrame extends JFrame {
 				case 'Z':
 				case 'x':
 				case 'X':
+					if (panel.menu) {
+						panel.menu = false;
+						break;
+					}
 					panel.notecheck(e);
 					break;
 			}
@@ -91,37 +99,48 @@ class myJFrame extends JFrame {
 		public void mousePressed(MouseEvent e) {}
 		public void mouseReleased(MouseEvent e) {}
 		public void mouseClicked(MouseEvent e) {
+			if (panel.menu) {
+				panel.menu = false;
+				return;
+			}
 			panel.notecheck(e);
 		}
 		public void mouseEntered(MouseEvent e) {}
 		public void mouseExited(MouseEvent e) {}
 	}
 	
-	class menuPage extends JPanel {
-		KeyList KL;
-		myJFrame frame;
+	// class menuPage extends JPanel {
+	// 	KeyList KL;
+	// 	myJFrame frame;
+	// 	BufferedImage logo;
+	// 	boolean done;
 		
-		public menuPage(KeyList KL1, myJFrame frame1) {
-			KL = KL1;
-			frame = frame1;
-		}
+	// 	public menuPage(KeyList KL1, myJFrame frame1) {
+	// 		KL = KL1;
+	// 		frame = frame1;
+	// 		done = false;
+	// 		try {
+	// 			logo = ImageIO.read(new File("logo.png"));
+	// 		}
+	// 		catch (Exception e) {}
+	// 	}
 
-		public void startGame() {
-			while (true) {
-				try {
-					Thread.sleep(1);
-				}
-				catch (Exception e) {}
-				repaint();
-			}
-		}
+	// 	public void startGame() {
+	// 		while (true) {
+	// 			try {
+	// 				Thread.sleep(1);
+	// 			}
+	// 			catch (Exception e) {}
+	// 			repaint();
+	// 		}
+	// 	}
 
-		public void paintComponent(Graphics g) {
-			super.paintComponent(g);
+	// 	public void paintComponent(Graphics g) {
+	// 		super.paintComponent(g);
 
-			//
-		}
-	}
+	// 		g.drawImage(logo, (int)(maxX * 0.4), (int)(maxY * 0.2), (int)(maxX * 0.2), (int)(maxY * 0.2), this);
+	// 	}
+	// }
 
 	class myJPanel extends JPanel {
 		KeyList KL;
@@ -130,21 +149,28 @@ class myJFrame extends JFrame {
 		int song;
         int score;
 		int combo;
+		int maxCombo = 0;
+		int num300s = 0;
+		int num100s = 0;
+		int num50s = 0;
+		int num0s = 0;
 
 		int currentTicks; // 200 ticks a second
 
         int seconds;
         int ticks; // 200 ticks a second
-		// BufferedImage bg;
+		BufferedImage logo;
 		int temp;
+		boolean menu;
+		boolean stats;
 
 		public myJPanel(KeyList KL1, myJFrame frame1, int s) {
 			KL = KL1;	
 			frame = frame1;
-			// try {
-			// 	bg = ImageIO.read(new File("bg.png"));
-			// }
-			// catch(Exception e) {}
+			try {
+				logo = ImageIO.read(new File("logo.png"));
+			}
+			catch(Exception e) {}
 			setBackground(new Color(250, 180, 220));
             score = 0;
             currentTicks = 0;
@@ -158,6 +184,8 @@ class myJFrame extends JFrame {
 				song1(notes);
 			}
 			song = s;
+			menu = true;
+			stats = false;
 
 
 			temp = metronome;
@@ -198,6 +226,12 @@ class myJFrame extends JFrame {
         }
 
 		public void startGame() {
+			while (menu) {
+				try {Thread.sleep(1);}
+				catch (Exception e) {}
+				repaint();
+			}
+
 			if (song == 1)
 				playSong1();
 
@@ -207,6 +241,10 @@ class myJFrame extends JFrame {
 			while (true) {
 				try {Thread.sleep(1);}
 				catch(Exception e) {}
+				if (menu) {
+					repaint();
+					continue;
+				}
 				current = System.currentTimeMillis();
 				while ((current - previous) >= GAME_SPEED) {
 					repaint();
@@ -224,10 +262,44 @@ class myJFrame extends JFrame {
 
 		public void paintComponent(Graphics g) {
 			super.paintComponent(g);
-			int maxX = (int)getSize().getWidth();
-			int maxY = (int)getSize().getHeight();
 
-            // g.drawImage(bg, 0, 0, maxX, maxY, this);
+			if (menu) {
+				int width = (int)(maxX * 0.2);
+				int logoX = (int)(maxX * 0.4);
+				int logoY = (int)(maxY * 0.08);
+				int center = (int)(maxX * 0.5);
+				g.drawImage(logo, logoX, logoY, width, width, this);
+
+				String text = "Note: You will need audio to play.";
+				int tempY = logoY + width + 70;
+				g.setColor(new Color(199, 0, 73));
+				g.setFont(new Font("Trebuchet MS", Font.BOLD, 30));
+				g.drawString(text, center - (text.length() * 7), tempY);
+				tempY += 70;
+				g.setColor(new Color(129, 87, 255));
+				g.setFont(new Font("Trebuchet MS", Font.PLAIN, 30));
+				text = "Hit the circles along with the beat of the song.";
+				g.drawString(text, center - (text.length() * 7), tempY);
+				tempY += 40;
+				text = "Move your mouse to the circle,";
+				g.drawString(text, center - (text.length() * 7), tempY);
+				tempY += 40;
+				text = "and press z, x, or left click to hit it.";
+				g.drawString(text, center - (text.length() * 6), tempY);
+				tempY += 40;
+				text = "Remember to time your hits and good luck!";
+				g.drawString(text, center - (text.length() * 7), tempY);
+				g.setColor(new Color(255, 103, 69));
+				g.setFont(new Font("Trebuchet MS", Font.BOLD, 30));
+				tempY += 70;
+				text = "Press x/z/click to start...";
+				g.drawString(text, center - (text.length() * 7), tempY);
+				return;
+			}
+
+			else if (stats) {
+				//
+			}
 
 			String adjScore = String.valueOf(score);
 			String adjTime = String.valueOf(seconds % 60);
@@ -260,15 +332,26 @@ class myJFrame extends JFrame {
 					else // otherwise just add raw score
 						score += n.scoring;
 
+					if (n.scoring == 300) // counting # of 300, 100, 50s
+						num300s++;
+					else if (n.scoring == 100)
+						num100s++;
+					else if (n.scoring == 50)
+						num50s++;
+
 					if (n.scoring != 0) // if hit the circle
 						combo++; // add to combo
 					n.scoreAdded = true;
 				}
 
 				if (n.over || n.hitTick < 0) { // done animating
-					if (!n.hit) // missed circle
+					if (!n.hit) { // missed circle
 						combo = 0; // don't add to combo
+						num0s++;
+					}
 
+					if (combo > maxCombo) // max combo
+						maxCombo = combo;
 					// note is over
                     notes.remove(i);
                     i--;
