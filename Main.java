@@ -306,10 +306,11 @@ class myJFrame extends JFrame {
 				g.setFont(new Font("Trebuchet MS", Font.BOLD, 30));
 				g.drawString(text, 70, 80);
 				text = "Score";
-				g.setColor(new Color(230, 230, 230));
+				g.setColor(new Color(240, 240, 240));
 				g.setFont(new Font("Trebuchet MS", Font.BOLD, 40));
 				g.drawString(text, 70, 160);
 				g.drawString("Accuracy", 70, 500);
+				g.drawString("Ranking", maxX - 200, 50);
 				text = "" + adjScore;
 				g.setColor(Color.white);
 				g.drawString(text, 350, 160);
