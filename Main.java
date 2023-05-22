@@ -30,7 +30,7 @@ class myJFrame extends JFrame {
 	static final int C_DECREASE = 3;
 
 	// hit values
-	static final int[] hitWindow2 = {60 / GAME_SPEED, 115 / GAME_SPEED, 170 / GAME_SPEED};
+	static final int[] hitWindow2 = {65 / GAME_SPEED, 125 / GAME_SPEED, 170 / GAME_SPEED};
 	static final int metronome = 78;
 	static final int offset = 187;
 	// originally: 68, 124, 180 ms
@@ -58,6 +58,10 @@ class myJFrame extends JFrame {
 		
 		maxX = (int)getSize().getWidth();
 		maxY = (int)getSize().getHeight();
+
+		System.out.println(maxX + " " + maxY);
+		// NOTE_SIZE = (int)(((maxX + maxY) / 2) * 0.1);
+		// CIRCLE_SIZE = (int)(NOTE_SIZE * 1.2);
 	}
 	public void startGame() {
 		panel.startGame();
@@ -74,7 +78,10 @@ class myJFrame extends JFrame {
 			switch(e.getKeyCode()) {
 				case 27:
 				case KeyEvent.VK_E:
-					System.exit(0);
+					if (!panel.stats)
+						panel.stats = true;
+					else
+						System.exit(0);
 					break;
 			}
 		}
@@ -109,38 +116,6 @@ class myJFrame extends JFrame {
 		public void mouseExited(MouseEvent e) {}
 	}
 	
-	// class menuPage extends JPanel {
-	// 	KeyList KL;
-	// 	myJFrame frame;
-	// 	BufferedImage logo;
-	// 	boolean done;
-		
-	// 	public menuPage(KeyList KL1, myJFrame frame1) {
-	// 		KL = KL1;
-	// 		frame = frame1;
-	// 		done = false;
-	// 		try {
-	// 			logo = ImageIO.read(new File("logo.png"));
-	// 		}
-	// 		catch (Exception e) {}
-	// 	}
-
-	// 	public void startGame() {
-	// 		while (true) {
-	// 			try {
-	// 				Thread.sleep(1);
-	// 			}
-	// 			catch (Exception e) {}
-	// 			repaint();
-	// 		}
-	// 	}
-
-	// 	public void paintComponent(Graphics g) {
-	// 		super.paintComponent(g);
-
-	// 		g.drawImage(logo, (int)(maxX * 0.4), (int)(maxY * 0.2), (int)(maxX * 0.2), (int)(maxY * 0.2), this);
-	// 	}
-	// }
 
 	class myJPanel extends JPanel {
 		KeyList KL;
@@ -154,6 +129,8 @@ class myJFrame extends JFrame {
 		int num100s = 0;
 		int num50s = 0;
 		int num0s = 0;
+		int notesOver = 0;
+		int numNotes;
 
 		int currentTicks; // 200 ticks a second
 
@@ -183,6 +160,7 @@ class myJFrame extends JFrame {
 			if (s == 1) {
 				song1(notes);
 			}
+			numNotes = notes.size();
 			song = s;
 			menu = true;
 			stats = false;
@@ -238,13 +216,13 @@ class myJFrame extends JFrame {
 			long previous = System.currentTimeMillis();
 			long current;
 
-			while (true) {
+			while (!stats) {
 				try {Thread.sleep(1);}
 				catch(Exception e) {}
-				if (menu) {
-					repaint();
-					continue;
-				}
+				// if (menu) {
+				// 	repaint();
+				// 	continue;
+				// }
 				current = System.currentTimeMillis();
 				while ((current - previous) >= GAME_SPEED) {
 					repaint();
@@ -257,6 +235,13 @@ class myJFrame extends JFrame {
 					previous += GAME_SPEED;
 				}
 			}
+
+			// while (stats) {
+			// 	try {Thread.sleep(1);}
+			// 	catch (Exception e) {}
+			// 	repaint();
+			// }
+			repaint();
 		}
 
 
@@ -287,6 +272,9 @@ class myJFrame extends JFrame {
 				text = "and press z, x, or left click to hit it.";
 				g.drawString(text, center - (text.length() * 6), tempY);
 				tempY += 40;
+				text = "press ESC to see stats, and ESC again to exit.";
+				g.drawString(text, center - (text.length() * 7), tempY);
+				tempY += 40;
 				text = "Remember to time your hits and good luck!";
 				g.drawString(text, center - (text.length() * 7), tempY);
 				g.setColor(new Color(255, 103, 69));
@@ -297,11 +285,6 @@ class myJFrame extends JFrame {
 				return;
 			}
 
-			else if (stats) {
-				String text = "";
-				return;
-			}
-
 			String adjScore = String.valueOf(score);
 			String adjTime = String.valueOf(seconds % 60);
 			if (adjTime.length() < 2)
@@ -309,6 +292,49 @@ class myJFrame extends JFrame {
 			adjTime = (seconds / 60) + ":" + adjTime;
 			while (adjScore.length() < 10)
 				adjScore = "0" + adjScore;
+
+			if (stats) {
+				int top = (6 * num300s) + (2 * num100s) + num50s;
+				double accuracy;
+				if (notesOver == 0)
+					accuracy = 0;
+				else
+					accuracy = (double)top / (6 * notesOver);
+				String acc = String.format("%.2f", accuracy * 100);
+				String text = "Senbonzakura - Lindsey Stirling";
+				g.setColor(new Color(250, 130, 70));
+				g.setFont(new Font("Trebuchet MS", Font.BOLD, 30));
+				g.drawString(text, 70, 80);
+				text = "Score";
+				g.setColor(new Color(230, 230, 230));
+				g.setFont(new Font("Trebuchet MS", Font.BOLD, 40));
+				g.drawString(text, 70, 160);
+				g.drawString("Accuracy", 70, 500);
+				text = "" + adjScore;
+				g.setColor(Color.white);
+				g.drawString(text, 350, 160);
+				g.drawString("" + num300s, 250, 300);
+				g.drawString("" + num100s, 250, 360);
+				g.drawString("" + num50s, 250, 420);
+				g.drawString("" + num0s, 720, 300);
+				g.drawString("" + combo, 720, 360);
+				g.drawString("" + maxCombo, 720, 420);
+				g.drawString(acc + "%", 350, 500);
+				g.setColor(new Color(73, 92, 201));
+				g.drawString("300", 70, 300);
+				g.setColor(new Color(48, 201, 63));
+				g.drawString("100", 70, 360);
+				g.setColor(new Color(68, 164, 219));
+				g.drawString("50", 70, 420);
+				g.setColor(new Color(227, 27, 27));
+				g.drawString("X", 430, 300);
+				g.setColor(new Color(255, 219, 46));
+				g.drawString("Combo", 430, 360);
+				g.setColor(new Color(212, 21, 129));
+				g.drawString("Max Combo", 430, 420);
+
+				return;
+			}
 
 			g.setColor(Color.white);
 			g.setFont(new Font("Trebuchet MS", Font.BOLD, 30));
@@ -356,6 +382,7 @@ class myJFrame extends JFrame {
 					// note is over
                     notes.remove(i);
                     i--;
+					notesOver++;
                 }
             }
 		}
@@ -494,7 +521,7 @@ class myJFrame extends JFrame {
 					else if (scoring == 50)
 						g.setColor(new Color(68, 164, 219, 6 * scoreAnim));
 					else if (scoring == 100)
-						g.setColor(new Color(79, 219, 135, 6 * scoreAnim));
+						g.setColor(new Color(48, 201, 63, 6 * scoreAnim));
 					else if (scoring == 300)
 						g.setColor(new Color(73, 92, 201, 6 * scoreAnim));
 				}
@@ -504,7 +531,7 @@ class myJFrame extends JFrame {
 						else if (scoring == 50)
 							g.setColor(new Color(68, 164, 219, 12 * (121 - scoreAnim)));
 						else if (scoring == 100)
-							g.setColor(new Color(79, 219, 135, 12 * (121 - scoreAnim)));
+							g.setColor(new Color(48, 201, 63, 12 * (121 - scoreAnim)));
 						else if (scoring == 300)
 							g.setColor(new Color(73, 92, 201, 12 * (121 - scoreAnim)));
 				}
@@ -514,7 +541,7 @@ class myJFrame extends JFrame {
 						else if (scoring == 50)
 							g.setColor(new Color(68, 164, 219));
 						else if (scoring == 100)
-							g.setColor(new Color(79, 219, 135));
+							g.setColor(new Color(48, 201, 63));
 						else if (scoring == 300)
 							g.setColor(new Color(73, 92, 201));
 				}
@@ -624,7 +651,7 @@ class myJFrame extends JFrame {
 	public void song1(ArrayList<Beat> notes) {
 		// every 78 ticks = 1 beat
 		// abt 154 bpm
-		notes.add(new Note(0, 0, -10, 0, 0)); // insignificant
+		// notes.add(new Note(0, 0, -10, 0, 0)); // insignificant
 		notes.add(new Note(100, 100, 4, 190, 1)); // 980
 		notes.add(new Note(200, 100, 6, 100, 2)); // 1305
 		notes.add(new Note(300, 100, 9, 105, 3)); // 1905
@@ -633,13 +660,13 @@ class myJFrame extends JFrame {
 		notes.add(new Note(600, 300, 15, 0, 2)); // 2980
 		notes.add(new Note(600, 100, 15, 150, 3)); // 3150
 		notes.add(new Note(800, 300, 16, 100, 4)); // 3300
-		notes.add(new Note(1000, 500, 17, 60, 5)); // 3450
-		notes.add(new Note(1000, 600, 17, 120, 1)); // 3530
-		notes.add(new Note(1000, 700, 18, 10, 2)); // 3610
-		notes.add(new Note(1000, 600, 18, 110, 3)); // 3700
-		// notes.add(new Note(1000, 600, 17, 120, 6)); // 3530
-		// notes.add(new Note(1000, 600, 17, 120, 6)); // 3530
-		// notes.add(new Note(1000, 600, 17, 120, 6)); // 3530
+		notes.add(new Note(1000, 400, 17, 60, 5)); // 3450
+		notes.add(new Note(1000, 500, 17, 120, 1)); // 3530
+		notes.add(new Note(1000, 600, 18, 10, 2)); // 3610
+		notes.add(new Note(900, 500, 18, 110, 3)); // 3700
+		notes.add(new Note(800, 400, 18, 180, 4)); // 3780
+		notes.add(new Note(600, 400, 19, 50, 5)); // 3850
+		notes.add(new Note(400, 600, 19, 120, 6)); // 3930
 		// notes.add(new Note(1000, 600, 17, 120, 6)); // 3530
 		// notes.add(new Note(1000, 600, 17, 120, 6)); // 3530
 		// notes.add(new Note(1000, 600, 17, 120, 6)); // 3530
