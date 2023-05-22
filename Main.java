@@ -137,6 +137,7 @@ class myJFrame extends JFrame {
         int seconds;
         int ticks; // 200 ticks a second
 		BufferedImage logo;
+		BufferedImage[] ranks;
 		int temp;
 		boolean menu;
 		boolean stats;
@@ -144,8 +145,16 @@ class myJFrame extends JFrame {
 		public myJPanel(KeyList KL1, myJFrame frame1, int s) {
 			KL = KL1;	
 			frame = frame1;
+			ranks = new BufferedImage[7];
 			try {
 				logo = ImageIO.read(new File("logo.png"));
+				ranks[0] = ImageIO.read(new File("ssrank.png"));
+				ranks[1] = ImageIO.read(new File("srank.png"));
+				ranks[2] = ImageIO.read(new File("arank.png"));
+				ranks[3] = ImageIO.read(new File("brank.png"));
+				ranks[4] = ImageIO.read(new File("crank.png"));
+				ranks[5] = ImageIO.read(new File("drank.png"));
+				ranks[6] = ImageIO.read(new File("zrank.png"));
 			}
 			catch(Exception e) {}
 			setBackground(new Color(250, 180, 220));
@@ -164,7 +173,6 @@ class myJFrame extends JFrame {
 			song = s;
 			menu = true;
 			stats = false;
-
 
 			temp = metronome;
 		}
@@ -310,7 +318,9 @@ class myJFrame extends JFrame {
 				g.setFont(new Font("Trebuchet MS", Font.BOLD, 40));
 				g.drawString(text, 70, 160);
 				g.drawString("Accuracy", 70, 500);
+				g.setFont(new Font("Trebuchet MS", Font.BOLD, 60));
 				g.drawString("Ranking", maxX - 200, 50);
+				g.setFont(new Font("Trebuchet MS", Font.BOLD, 40));
 				text = "" + adjScore;
 				g.setColor(Color.white);
 				g.drawString(text, 350, 160);
@@ -333,6 +343,27 @@ class myJFrame extends JFrame {
 				g.drawString("Combo", 430, 360);
 				g.setColor(new Color(212, 21, 129));
 				g.drawString("Max Combo", 430, 420);
+				if (accuracy >= 99) { // ss rank
+					//
+				}
+				else if (accuracy >= 95) { // s rank
+					//
+				}
+				else if (accuracy >= 90) { // a rank
+					//
+				}
+				else if (accuracy >= 80) { // b rank
+					//
+				}
+				else if (accuracy >= 70) { // c rank
+					//
+				}
+				else if (accuracy >= 60) { // d rank
+					//
+				}
+				else { // z rank
+					//
+				}
 
 				return;
 			}
