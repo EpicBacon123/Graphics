@@ -648,7 +648,7 @@ class myJFrame extends JFrame {
 
 		public void playHitSound() {
 			try {
-				AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File("./soft-hitclap2.wav").getAbsoluteFile());
+				AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File("./soft-hitclap2.wav").getAbsoluteFile()); //stop at 1:23
 				Clip clip = AudioSystem.getClip();
 				clip.open(audioInputStream);
 				clip.start();
@@ -694,19 +694,32 @@ class myJFrame extends JFrame {
 		notes.add(new Note(600, 400, 19, 30, 5)); // 3850
 		notes.add(new Note(400, 400, 19, 100, 6)); // 3920
 		notes.add(new Note(400, 600, 20, 80, 7)); // 4000
-		notes.add(new Note(200, 600, 21, 180, 1)); // 4480
-		notes.add(new Note(200, 500, 24, 190, 2)); // 4990
-		notes.add(new Note(200, 400, 26, 90, 3)); // 5290
-		notes.add(new Note(300, 300, 28, 10, 4)); // 5610
-		notes.add(new Note(400, 200, 29, 140, 1)); // 5940
-		notes.add(new Note(300, 200, 30, 20, 2)); // 6020
-		notes.add(new Note(200, 200, 30, 80, 3)); // 6100
-		notes.add(new Note(100, 200, 30, 170, 4)); // 6180
-		notes.add(new Note(100, 100, 31, 30, 5)); // 6250
-		// notes.add(new Note(400, 200, 29, 140, 5)); // 5940
-		// notes.add(new Note(400, 200, 29, 140, 5)); // 5940
-		// notes.add(new Note(400, 200, 29, 140, 5)); // 5940
-		// notes.add(new Note(400, 200, 29, 140, 5)); // 5940
+		notes.add(new Note(200, 600, 22, 0, 1)); // 4480
+		notes.add(new Note(200, 500, 25, 10, 2)); // 4990
+		notes.add(new Note(200, 400, 26, 110, 3)); // 5290
+		notes.add(new Note(300, 300, 28, 30, 4)); // 5610
+		notes.add(new Note(400, 200, 29, 180, 1)); // 5940
+		notes.add(new Note(300, 200, 30, 60, 2)); // 6020
+		notes.add(new Note(200, 200, 30, 130, 3)); // 6100
+		notes.add(new Note(100, 200, 31, 20, 4)); // 6180
+		notes.add(new Note(100, 100, 31, 90, 5)); // 6250
+		notes.add(new Note(200, 100, 31, 170, 6)); // 6330
+		notes.add(new Note(300, 100, 32, 50, 7)); // 6400
+		notes.add(new Note(400, 100, 32, 120, 8)); // 6480
+		notes.add(new Note(500, 100, 33, 0, 9)); // 6550
+		notes.add(new Note(500, 300, 33, 140, 1)); // 6710
+		notes.add(new Note(300, 200, 34, 90, 2)); // 6860
+		notes.add(new Note(500, 100, 35, 20, 3)); // 7020
+		notes.add(new Note(700, 300, 35, 190, 4)); // 7170
+		notes.add(new Note(500, 500, 36, 120, 5)); // 7320
+		notes.add(new Note(700, 500, 38, 40, 1)); // 7640
+		notes.add(new Note(700, 100, 39, 150, 2)); // 7950
+		notes.add(new Note(500, 100, 41, 60, 9)); // 8260
+		// notes.add(new Note(500, 100, 32, 180, 9)); // 6550
+		// notes.add(new Note(500, 100, 32, 180, 9)); // 6550
+		// notes.add(new Note(500, 100, 32, 180, 9)); // 6550
+		// notes.add(new Note(500, 100, 32, 180, 9)); // 6550
+		// notes.add(new Note(500, 100, 32, 180, 9)); // 6550
 	}
 }
 
