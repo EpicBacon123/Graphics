@@ -712,11 +712,11 @@ class myJFrame extends JFrame {
 		notes.add(new Note(500, 100, 35, 20, 3)); // 7020
 		notes.add(new Note(700, 300, 35, 190, 4)); // 7170
 		notes.add(new Note(500, 500, 36, 120, 5)); // 7320
-		notes.add(new Note(700, 500, 38, 40, 1)); // 7640
-		notes.add(new Note(700, 100, 39, 150, 2)); // 7950
-		notes.add(new Note(500, 100, 41, 60, 9)); // 8260
-		// notes.add(new Note(500, 100, 32, 180, 9)); // 6550
-		// notes.add(new Note(500, 100, 32, 180, 9)); // 6550
+		notes.add(new Note(700, 500, 38, 40, 1)); // 7642
+		notes.add(new Note(700, 100, 39, 150, 2)); // 7954
+		notes.add(new Note(900, 100, 41, 60, 3)); // 8266
+		notes.add(new Note(1000, 100, 42, 180, 4)); // 8578
+		notes.add(new Note(900, 200, 44, 90, 5)); // 8890
 		// notes.add(new Note(500, 100, 32, 180, 9)); // 6550
 		// notes.add(new Note(500, 100, 32, 180, 9)); // 6550
 		// notes.add(new Note(500, 100, 32, 180, 9)); // 6550
