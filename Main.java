@@ -148,13 +148,13 @@ class myJFrame extends JFrame {
 			ranks = new BufferedImage[7];
 			try {
 				logo = ImageIO.read(new File("logo.png"));
-				ranks[0] = ImageIO.read(new File("ssrank.png"));
-				ranks[1] = ImageIO.read(new File("srank.png"));
-				ranks[2] = ImageIO.read(new File("arank.png"));
-				ranks[3] = ImageIO.read(new File("brank.png"));
-				ranks[4] = ImageIO.read(new File("crank.png"));
-				ranks[5] = ImageIO.read(new File("drank.png"));
-				ranks[6] = ImageIO.read(new File("zrank.png"));
+				ranks[0] = ImageIO.read(new File("./rank/ssrank.png"));
+				ranks[1] = ImageIO.read(new File("./rank/srank.png"));
+				ranks[2] = ImageIO.read(new File("./rank/arank.png"));
+				ranks[3] = ImageIO.read(new File("./rank/brank.png"));
+				ranks[4] = ImageIO.read(new File("./rank/crank.png"));
+				ranks[5] = ImageIO.read(new File("./rank/drank.png"));
+				ranks[6] = ImageIO.read(new File("./rank/zrank.png"));
 			}
 			catch(Exception e) {}
 			setBackground(new Color(250, 180, 220));
@@ -170,6 +170,7 @@ class myJFrame extends JFrame {
 				song1(notes);
 			}
 			numNotes = notes.size();
+			System.out.println(numNotes);
 			song = s;
 			menu = true;
 			stats = false;
@@ -319,7 +320,7 @@ class myJFrame extends JFrame {
 				g.drawString(text, 70, 160);
 				g.drawString("Accuracy", 70, 500);
 				g.setFont(new Font("Trebuchet MS", Font.BOLD, 60));
-				g.drawString("Ranking", maxX - 200, 50);
+				g.drawString("Ranking", maxX - 350, 230);
 				g.setFont(new Font("Trebuchet MS", Font.BOLD, 40));
 				text = "" + adjScore;
 				g.setColor(Color.white);
@@ -343,27 +344,20 @@ class myJFrame extends JFrame {
 				g.drawString("Combo", 430, 360);
 				g.setColor(new Color(212, 21, 129));
 				g.drawString("Max Combo", 430, 420);
-				if (accuracy >= 99) { // ss rank
-					//
-				}
-				else if (accuracy >= 95) { // s rank
-					//
-				}
-				else if (accuracy >= 90) { // a rank
-					//
-				}
-				else if (accuracy >= 80) { // b rank
-					//
-				}
-				else if (accuracy >= 70) { // c rank
-					//
-				}
-				else if (accuracy >= 60) { // d rank
-					//
-				}
-				else { // z rank
-					//
-				}
+				if (accuracy >= .99)// ss rank
+					g.drawImage(ranks[0], maxX - 470, 300, 430, 350, this);
+				else if (accuracy >= .95)// s rank
+					g.drawImage(ranks[1], maxX - 390, 300, 280, 350, this);
+				else if (accuracy >= .90) // a rank
+					g.drawImage(ranks[2], maxX - 410, 300, 300, 350, this);
+				else if (accuracy >= .80) // b rank
+					g.drawImage(ranks[3], maxX - 360, 300, 280, 350, this);
+				else if (accuracy >= .70) // c rank
+					g.drawImage(ranks[4], maxX - 360, 300, 280, 330, this);
+				else if (accuracy >= .60) // d rank
+					g.drawImage(ranks[5], maxX - 400, 300, 300, 330, this);
+				else // z rank
+					g.drawImage(ranks[6], maxX - 360, 300, 250, 300, this);
 
 				return;
 			}
@@ -654,7 +648,7 @@ class myJFrame extends JFrame {
 
 		public void playHitSound() {
 			try {
-				AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File("./hit.wav").getAbsoluteFile());
+				AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File("./soft-hitclap2.wav").getAbsoluteFile());
 				Clip clip = AudioSystem.getClip();
 				clip.open(audioInputStream);
 				clip.start();
@@ -684,29 +678,35 @@ class myJFrame extends JFrame {
 		// every 78 ticks = 1 beat
 		// abt 154 bpm
 		// notes.add(new Note(0, 0, -10, 0, 0)); // insignificant
-		notes.add(new Note(100, 100, 4, 190, 1)); // 980
-		notes.add(new Note(200, 100, 6, 100, 2)); // 1305
-		notes.add(new Note(300, 100, 9, 105, 3)); // 1905
-		notes.add(new Note(400, 100, 11, 170, 4)); // 2370
-		notes.add(new Note(400, 300, 13, 90, 1)); // 2685
-		notes.add(new Note(600, 300, 15, 0, 2)); // 2980
-		notes.add(new Note(600, 100, 15, 150, 3)); // 3150
-		notes.add(new Note(800, 300, 16, 100, 4)); // 3300
+		notes.add(new Note(100, 100, 4, 170, 1)); // 980
+		notes.add(new Note(200, 100, 6, 80, 2)); // 1305
+		notes.add(new Note(300, 100, 9, 90, 3)); // 1905
+		notes.add(new Note(400, 100, 11, 150, 4)); // 2370
+		notes.add(new Note(400, 300, 13, 70, 1)); // 2685
+		notes.add(new Note(600, 300, 14, 180, 2)); // 2980
+		notes.add(new Note(600, 100, 15, 130, 3)); // 3150
+		notes.add(new Note(800, 300, 16, 80, 4)); // 3300
 		notes.add(new Note(1000, 400, 17, 60, 5)); // 3450
-		notes.add(new Note(1000, 500, 17, 120, 1)); // 3530
-		notes.add(new Note(1000, 600, 18, 10, 2)); // 3610
-		notes.add(new Note(900, 500, 18, 110, 3)); // 3700
-		notes.add(new Note(800, 400, 18, 180, 4)); // 3780
-		notes.add(new Note(600, 400, 19, 50, 5)); // 3850
-		notes.add(new Note(400, 600, 19, 120, 6)); // 3930
-		// notes.add(new Note(1000, 600, 17, 120, 6)); // 3530
-		// notes.add(new Note(1000, 600, 17, 120, 6)); // 3530
-		// notes.add(new Note(1000, 600, 17, 120, 6)); // 3530
-		// notes.add(new Note(1000, 600, 17, 120, 6)); // 3530
-		// notes.add(new Note(1000, 600, 17, 120, 6)); // 3530
-		// notes.add(new Note(1000, 600, 17, 120, 6)); // 3530
-		// notes.add(new Note(1000, 600, 17, 120, 6)); // 3530
-		// notes.add(new Note(1000, 600, 17, 120, 6)); // 3530
+		notes.add(new Note(1000, 500, 17, 100, 1)); // 3530
+		notes.add(new Note(1000, 600, 17, 190, 2)); // 3610
+		notes.add(new Note(900, 500, 18, 90, 3)); // 3700
+		notes.add(new Note(800, 400, 18, 160, 4)); // 3780
+		notes.add(new Note(600, 400, 19, 30, 5)); // 3850
+		notes.add(new Note(400, 400, 19, 100, 6)); // 3920
+		notes.add(new Note(400, 600, 20, 80, 7)); // 4000
+		notes.add(new Note(200, 600, 21, 180, 1)); // 4480
+		notes.add(new Note(200, 500, 24, 190, 2)); // 4990
+		notes.add(new Note(200, 400, 26, 90, 3)); // 5290
+		notes.add(new Note(300, 300, 28, 10, 4)); // 5610
+		notes.add(new Note(400, 200, 29, 140, 1)); // 5940
+		notes.add(new Note(300, 200, 30, 20, 2)); // 6020
+		notes.add(new Note(200, 200, 30, 80, 3)); // 6100
+		notes.add(new Note(100, 200, 30, 170, 4)); // 6180
+		notes.add(new Note(100, 100, 31, 30, 5)); // 6250
+		// notes.add(new Note(400, 200, 29, 140, 5)); // 5940
+		// notes.add(new Note(400, 200, 29, 140, 5)); // 5940
+		// notes.add(new Note(400, 200, 29, 140, 5)); // 5940
+		// notes.add(new Note(400, 200, 29, 140, 5)); // 5940
 	}
 }
 
@@ -716,22 +716,6 @@ class myJFrame extends JFrame {
 Optional:
 - Sliders
 - Spinners
-- Transitions
-- Instructions page
 - Map Selection page
-- Score overview
 - Scoreboard using files?
-*/
-
-/*
-Timing: .1 speed
-- 2:17
- */
-
-/* 
-Possible fonts:
-- Calibri
-- Corbel
-- SansSerif
-- Trebuchet MS
 */
