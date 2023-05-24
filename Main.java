@@ -707,24 +707,37 @@ class myJFrame extends JFrame {
 		notes.add(new Note(400, 200, 30, 0, 1)); // 5940
 		notes.add(new Note(300, 200, 30, 80, 2)); // 6020
 		notes.add(new Note(200, 200, 30, 150, 3)); // 6100
-		notes.add(new Note(100, 200, 31, 40, 4)); // 6180
-		notes.add(new Note(100, 100, 31, 110, 5)); // 6250
-		notes.add(new Note(200, 100, 31, 190, 6)); // 6330
-		notes.add(new Note(300, 100, 32, 70, 7)); // 6400
-		notes.add(new Note(400, 100, 32, 140, 8)); // 6480
-		notes.add(new Note(500, 100, 33, 20, 9)); // 6550
-		notes.add(new Note(300, 200, 34, 80, 1)); // 6860
-		notes.add(new Note(500, 100, 35, 0, 2)); // 7020
-		notes.add(new Note(700, 300, 35, 170, 3)); // 7170
-		notes.add(new Note(500, 500, 36, 100, 4)); // 7320
-		notes.add(new Note(700, 500, 38, 50, 1)); // 7642
-		notes.add(new Note(700, 100, 39, 170, 2)); // 7954
-		notes.add(new Note(900, 100, 41, 70, 3)); // 8266
-		notes.add(new Note(1000, 100, 43, 0, 4)); // 8578
-		notes.add(new Note(900, 200, 44, 100, 5)); // 8890
-		// notes.add(new Note(500, 100, 32, 180, 9)); // 6550
-		// notes.add(new Note(500, 100, 32, 180, 9)); // 6550
-		// notes.add(new Note(500, 100, 32, 180, 9)); // 6550
+		notes.add(new Note(100, 200, 31, 50, 4)); // 6180
+		notes.add(new Note(100, 100, 31, 120, 5)); // 6250
+		notes.add(new Note(200, 100, 32, 0, 6)); // 6330
+		notes.add(new Note(300, 100, 32, 80, 7)); // 6400
+		notes.add(new Note(400, 100, 32, 150, 8)); // 6480
+		notes.add(new Note(500, 100, 33, 30, 9)); // 6550
+		notes.add(new Note(300, 200, 34, 100, 1)); // 6860
+		notes.add(new Note(500, 100, 35, 40, 2)); // 7020
+		notes.add(new Note(700, 300, 35, 190, 3)); // 7170
+		notes.add(new Note(500, 500, 36, 120, 4)); // 7320
+		notes.add(new Note(700, 500, 38, 60, 1)); // 7642
+		notes.add(new Note(700, 100, 39, 180, 2)); // 7954
+		notes.add(new Note(900, 100, 41, 100, 3)); // 8266
+		notes.add(new Note(1000, 100, 43, 20, 4)); // 8578
+		notes.add(new Note(900, 200, 44, 110, 5)); // 8890
+		notes.add(new Note(900, 300, 46, 20, 6)); // 9200
+		notes.add(new Note(900, 400, 47, 110, 7)); // 9510
+		notes.add(new Note(900, 500, 49, 20, 8)); // 9820
+		notes.add(new Note(600, 500, 49, 170, 1)); // 9970
+		notes.add(new Note(300, 300, 50, 130, 2)); // 10130
+		notes.add(new Note(300, 400, 52, 0, 3)); // 10400
+		notes.add(new Note(400, 500, 52, 100, 5)); // 10470
+		notes.add(new Note(500, 400, 52, 150, 6)); // 10550
+		notes.add(new Note(500, 300, 53, 100, 7)); // 10700
+		notes.add(new Note(600, 300, 55, 10, 1)); // 11010
+		notes.add(new Note(700, 300, 56, 120, 2)); // 11320
+		notes.add(new Note(900, 300, 58, 30, 3)); // 11630
+		// notes.add(new Note(900, 300, 55, 10, 8)); // 11010
+		// notes.add(new Note(900, 300, 55, 10, 8)); // 11010
+		// notes.add(new Note(900, 300, 55, 10, 8)); // 11010
+		// notes.add(new Note(900, 300, 55, 10, 8)); // 11010
 	}
 }
 
