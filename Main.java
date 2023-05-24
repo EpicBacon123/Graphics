@@ -450,17 +450,17 @@ class myJFrame extends JFrame {
 		int c_smaller; // counter var for outer circle getting smaller
 		int cDecrease; // rate the outer circle moves in
 
-		public void isHit(int mx, int my, int gametick) {}
+		public void isHit(int mx, int my, int gametick) {} // abstract methods
 		public void draw(Graphics g) {}
 	}
 
 
-	class Note extends Beat {
+	class Note extends Beat { // circle method
 		int r; // radius of hit-circle
 
 		// default constructor with coords, time, and order
 		public Note(int x1, int y1, int s, int t, int o) {
-			r = NOTE_SIZE;
+			r = NOTE_SIZE; // default values f
             c_r = CIRCLE_SIZE;
 			cDecrease = C_DECREASE;
             c_smaller = 0;
