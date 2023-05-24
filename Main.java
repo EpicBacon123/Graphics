@@ -267,12 +267,12 @@ class myJFrame extends JFrame {
 				int center = (int)(maxX * 0.5);
 				g.drawImage(logo, logoX, logoY, width, width, this); // draw logo
 
-				// all the text
-				String text = "Note: You will need audio to play.";
+				// instructions
+				String text = "Note: You will need audio to play."; // temp string + y coord var
 				int tempY = logoY + width + 70;
 				g.setColor(new Color(199, 0, 73));
 				g.setFont(new Font("Trebuchet MS", Font.BOLD, 30));
-				g.drawString(text, center - (text.length() * 7), tempY);
+				g.drawString(text, center - (text.length() * 7), tempY); // use text.length() to center text
 				tempY += 70;
 				g.setColor(new Color(129, 87, 255));
 				g.setFont(new Font("Trebuchet MS", Font.PLAIN, 30));
@@ -298,28 +298,28 @@ class myJFrame extends JFrame {
 				return;
 			}
 
-			String adjScore = String.valueOf(score);
-			String adjTime = String.valueOf(seconds % 60);
-			if (adjTime.length() < 2)
+			String adjScore = String.valueOf(score); // string version of score
+			String adjTime = String.valueOf(seconds % 60); // mins : secs
+			if (adjTime.length() < 2) // add 0 in front of single digit secs
 				adjTime = "0" + adjTime;
-			adjTime = (seconds / 60) + ":" + adjTime;
-			while (adjScore.length() < 10)
+			adjTime = (seconds / 60) + ":" + adjTime; // add mins + ":"
+			while (adjScore.length() < 10) // add 0s in front of score
 				adjScore = "0" + adjScore;
 
-			if (stats) {
-				int top = (6 * num300s) + (2 * num100s) + num50s;
+			if (stats) { // stats screen
+				int top = (6 * num300s) + (2 * num100s) + num50s; // numerator in accuracy
 				double accuracy;
-				if (notesOver == 0)
+				if (notesOver == 0) // can't / by 0
 					accuracy = 0;
 				else
 					accuracy = (double)top / (6 * notesOver);
-				String acc = String.format("%.2f", accuracy * 100);
-				String text = "Senbonzakura - Lindsey Stirling";
+				String acc = String.format("%.2f", accuracy * 100); // string form of acc in %
+				String text = "Senbonzakura - Lindsey Stirling"; // song name
 				g.setColor(new Color(250, 130, 70));
 				g.setFont(new Font("Trebuchet MS", Font.BOLD, 30));
 				g.drawString(text, 70, 80);
 				text = "Score";
-				g.setColor(new Color(240, 240, 240));
+				g.setColor(new Color(240, 240, 240)); // display light gray text - labels
 				g.setFont(new Font("Trebuchet MS", Font.BOLD, 40));
 				g.drawString(text, 70, 160);
 				g.drawString("Accuracy", 70, 500);
@@ -327,7 +327,7 @@ class myJFrame extends JFrame {
 				g.drawString("Ranking", maxX - 350, 230);
 				g.setFont(new Font("Trebuchet MS", Font.BOLD, 40));
 				text = "" + adjScore;
-				g.setColor(Color.white);
+				g.setColor(Color.white); // white text - scoring values
 				g.drawString(text, 350, 160);
 				g.drawString("" + num300s, 250, 300);
 				g.drawString("" + num100s, 250, 360);
@@ -336,7 +336,7 @@ class myJFrame extends JFrame {
 				g.drawString("" + combo, 720, 360);
 				g.drawString("" + maxCombo, 720, 420);
 				g.drawString(acc + "%", 350, 500);
-				g.setColor(new Color(73, 92, 201));
+				g.setColor(new Color(73, 92, 201)); // colored text to show 300s, 100s, 50s, misses
 				g.drawString("300", 70, 300);
 				g.setColor(new Color(48, 201, 63));
 				g.drawString("100", 70, 360);
@@ -348,6 +348,7 @@ class myJFrame extends JFrame {
 				g.drawString("Combo", 430, 360);
 				g.setColor(new Color(212, 21, 129));
 				g.drawString("Max Combo", 430, 420);
+				// display images of ranking
 				if (accuracy >= .99)// ss rank
 					g.drawImage(ranks[0], maxX - 470, 300, 430, 350, this);
 				else if (accuracy >= .95)// s rank
@@ -366,24 +367,25 @@ class myJFrame extends JFrame {
 				return;
 			}
 
+			// text in game page
 			g.setColor(Color.white);
 			g.setFont(new Font("Trebuchet MS", Font.BOLD, 30));
-			g.drawString(adjScore, maxX - 200, 50);
-			g.drawString(combo + "X", 50, maxY - 30);
+			g.drawString(adjScore, maxX - 200, 50); // score
+			g.drawString(combo + "X", 50, maxY - 30); // combo
 			g.setFont(new Font("Trebuchet MS", Font.PLAIN, 26));
-			g.drawString(adjTime, maxX - 100, maxY - 30);
+			g.drawString(adjTime, maxX - 100, maxY - 30); // time
 
-			// if (currentTicks >= offset && currentTicks % metronome == (offset % metronome)) { // start including hit sounds
+			// if (currentTicks >= offset && currentTicks % metronome == (offset % metronome)) { // metronome
 			// 		playHitSound();
 			// }
 
             Beat n;
-            for (int i = 0; i < notes.size(); i++) {
+            for (int i = 0; i < notes.size(); i++) { // loop thru notes
                 n = notes.get(i);
-				if (currentTicks >= n.startTick) {
+				if (currentTicks >= n.startTick) { // if time to display note
 					n.draw(g);
 				}
-                if (n.hit && !n.scoreAdded) {
+                if (n.hit && !n.scoreAdded) { // note is hit
 					if (combo > 0) // if there is a combo, include multiplier
 						score += n.scoring * (1 + ((combo - 1) / 25.0));
 					else // otherwise just add raw score
@@ -409,7 +411,7 @@ class myJFrame extends JFrame {
 
 					if (combo > maxCombo) // max combo
 						maxCombo = combo;
-					// note is over
+					// note is over - remove from arraylist
                     notes.remove(i);
                     i--;
 					notesOver++;
@@ -417,33 +419,33 @@ class myJFrame extends JFrame {
             }
 		}
 
-		public void playHitSound() { // temp
-			try {
-				AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File("./hit.wav").getAbsoluteFile());
-				Clip clip = AudioSystem.getClip();
-				clip.open(audioInputStream);
-				clip.start();
-			}
-			catch(Exception e) {
-				System.out.println("Error with playing sound.");
-				e.printStackTrace();
-			}
-		}
+		// public void playHitSound() { // temp
+		// 	try {
+		// 		AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File("./hit.wav").getAbsoluteFile());
+		// 		Clip clip = AudioSystem.getClip();
+		// 		clip.open(audioInputStream);
+		// 		clip.start();
+		// 	}
+		// 	catch(Exception e) {
+		// 		System.out.println("Error with playing sound.");
+		// 		e.printStackTrace();
+		// 	}
+		// }
 	}
 
-	abstract class Beat {
+	abstract class Beat { // could've added sliders if had more time
 		int x; // coords
 		int y;
 		int c_r; // radius of outer circle
 		int order; // number in the middle of circle
 		boolean over; // if beat is over
-		boolean hit;
-		boolean scoreAdded;
-		int startTick;
-		int hitTick;
-		int scoring;
-		int scoreAnim;
-		int fadeIn;
+		boolean hit; // if circle is hit
+		boolean scoreAdded; // if done updating scoring
+		int startTick; // when to start display
+		int hitTick; // when to hit circle
+		int scoring; // 300, 100, 50, or 0
+		int scoreAnim; // fade in/out the scoring of the note
+		int fadeIn; // circle fades in
 
 		int c_smaller; // counter var for outer circle getting smaller
 		int cDecrease; // rate the outer circle moves in
