@@ -460,22 +460,22 @@ class myJFrame extends JFrame {
 
 		// default constructor with coords, time, and order
 		public Note(int x1, int y1, int s, int t, int o) {
-			r = NOTE_SIZE; // default values f
+			r = NOTE_SIZE; // default values
             c_r = CIRCLE_SIZE;
 			cDecrease = C_DECREASE;
             c_smaller = 0;
-			over = false;
+			over = false; // set to false - indicate if notes are over/hit
 			hit = false;
 			scoreAdded = false;
-			x = x1 + r;
+			x = x1 + r; // coords
 			y = y1 + r;
             order = o;
-			int totTicks = (tps * s) + t;
+			int totTicks = (tps * s) + t; // temp var for timing
 			hitTick = totTicks;
 			totTicks -= CIRCLE_SIZE * cDecrease;
 			startTick = totTicks;
-			scoring = 0;
-			scoreAnim = 0;
+			scoring = 0; // scoring - 300, 100, 50, 0
+			scoreAnim = 0; // animation vars
 			fadeIn = 0;
 		}
 
@@ -534,21 +534,21 @@ class myJFrame extends JFrame {
 			Graphics2D g2 = (Graphics2D) g;
             g2.setFont(new Font("Trebuchet MS", Font.BOLD, 30));
             // update the outer circle
-            if (c_r <= -1 * hitWindow2[2] / cDecrease || hit) {
+            if (c_r <= -1 * hitWindow2[2] / cDecrease || hit) { // if hit/reached hitTick
 				if (scoreAnim >= 120) { // stop animation
 					over = true;
 				}
-				scoreAnim++; // increment animation
+				scoreAnim++; // increment animation var
 				String value;
 
-				if (scoring == 0)
+				if (scoring == 0) // score value
 					value = "X";
 				else {
 					value = "" + scoring;
 				}
 
-				if (scoreAnim <= 40) { // first 20/100 ticks
-					if (scoring == 0)
+				if (scoreAnim <= 40) { // first 40 ticks
+					if (scoring == 0) // fade in the score value
 						g.setColor(new Color(227, 27, 27, 6 * scoreAnim));
 					else if (scoring == 50)
 						g.setColor(new Color(68, 164, 219, 6 * scoreAnim));
@@ -557,8 +557,8 @@ class myJFrame extends JFrame {
 					else if (scoring == 300)
 						g.setColor(new Color(73, 92, 201, 6 * scoreAnim));
 				}
-				else if (scoreAnim >= 100) { // last 20/100 ticks
-					if (scoring == 0)
+				else if (scoreAnim >= 100) { // last 20 ticks
+					if (scoring == 0) // fade out score value
 						g.setColor(new Color(227, 27, 27, 12 * (121 - scoreAnim)));
 						else if (scoring == 50)
 							g.setColor(new Color(68, 164, 219, 12 * (121 - scoreAnim)));
@@ -568,7 +568,7 @@ class myJFrame extends JFrame {
 							g.setColor(new Color(73, 92, 201, 12 * (121 - scoreAnim)));
 				}
 				else { // in between
-					if (scoring == 0)
+					if (scoring == 0) // set color to be 100% opaque
 						g.setColor(new Color(227, 27, 27));
 						else if (scoring == 50)
 							g.setColor(new Color(68, 164, 219));
@@ -592,7 +592,7 @@ class myJFrame extends JFrame {
 			// outer circle
 			int cr = r + c_r;
 			int dia = 2 * cr;
-			if (c_r >= 0) {
+			if (c_r >= 0) { // only draw when outer circle > inner circle
 				g2.setColor(new Color(101, 224, 243, 180));
 				g2.setStroke(new BasicStroke(2));
 				g2.drawOval(x - cr + 5, y - cr + 5, dia - 10, dia - 10);
@@ -601,22 +601,22 @@ class myJFrame extends JFrame {
 
             // actual circle to hit
             dia = 2 * r;
-			if (fadeIn < 40)
+			if (fadeIn < 40) // fade in the circle in for first 40 ticks
 				g2.setColor(new Color(101, 224, 243, 6 * fadeIn));
-			else if (scoring > 0 || c_r <= 0)
+			else if (scoring > 0 || c_r <= 0) // fade out the circle for last 40 ticks
 				g2.setColor(new Color(101, 224, 243, 255 - (6 * scoreAnim)));
-			else
+			else // in between
 				g2.setColor(new Color(101, 224, 243));
 			g2.fillOval(x - r, y - r, dia, dia);
 
             // order # + border
-			if (fadeIn < 40) {
+			if (fadeIn < 40) { // fade in the border
 				g2.setColor(new Color(255, 255, 255, 6 * fadeIn));
 				fadeIn++;
 			}
-			else if (scoring > 0 || c_r <= 0)
+			else if (scoring > 0 || c_r <= 0) // fade out the circle
 				g2.setColor(new Color(255, 255, 255, 255 - (6 * scoreAnim)));
-			else
+			else // in between
 				g2.setColor(Color.white);
             g2.drawString(String.valueOf(order), x - 7, y + 11);
             g2.setStroke(new BasicStroke(8));
@@ -624,12 +624,12 @@ class myJFrame extends JFrame {
 		}
 
 		public void isHit(int mx, int my, int gameTicks) {
-			int x1 = Math.abs(mx - x);
+			int x1 = Math.abs(mx - x); // pythag calculation
 			int y1 = Math.abs(my - y);
 			double distance = Math.pow(x1, 2) + Math.pow(y1, 2);
-			distance = Math.sqrt(distance);
+			distance = Math.sqrt(distance); // distance between mouse and circle radius
 
-			if (distance <= r) {
+			if (distance <= r) { // mouse inside the circle
 				int diffTicks = gameTicks - hitTick; // human error
 				System.out.println("Note " + order + ": " + diffTicks + "\t" + c_r);
 				diffTicks = Math.abs(diffTicks);
@@ -652,7 +652,7 @@ class myJFrame extends JFrame {
             }
 		}
 
-		public void playHitSound() {
+		public void playHitSound() { // play .wav file - stackoverflow
 			try {
 				AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File("./soft-hitclap2.wav").getAbsoluteFile()); //stop at 1:23
 				Clip clip = AudioSystem.getClip();
@@ -666,21 +666,21 @@ class myJFrame extends JFrame {
 		}
 	}
 	
-	class Slider extends Beat {
-		static final int UP = 0;
-		static final int DOWN = 1;
-		static final int LEFT = 2;
-		static final int RIGHT = 3;
-		int orientation;
-		int length;
-		int s_speed;
-		int first; // the 50, 100, 300
+	// class Slider extends Beat { // not enough time to implement
+	// 	static final int UP = 0;
+	// 	static final int DOWN = 1;
+	// 	static final int LEFT = 2;
+	// 	static final int RIGHT = 3;
+	// 	int orientation;
+	// 	int length;
+	// 	int s_speed;
+	// 	int first; // the 50, 100, 300
 
-		public Slider(int x1, int y1, int s, int t, int o, int dir) {}
-	}
+	// 	public Slider(int x1, int y1, int s, int t, int o, int dir) {}
+	// }
 
 	// songs
-	public void song1(ArrayList<Beat> notes) {
+	public void song1(ArrayList<Beat> notes) { // arraylist of songs
 		// every 78 ticks = 1 beat
 		// abt 154 bpm
 		// notes.add(new Note(0, 0, -10, 0, 0)); // insignificant
@@ -740,13 +740,3 @@ class myJFrame extends JFrame {
 		// notes.add(new Note(900, 300, 55, 10, 8)); // 11010
 	}
 }
-
-
-
-/*
-Optional:
-- Sliders
-- Spinners
-- Map Selection page
-- Scoreboard using files?
-*/
