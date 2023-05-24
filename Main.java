@@ -9,7 +9,7 @@ import java.util.*;
 // import javafx.BackgroundImage;
 
 public class Main {
-	public static void main(String[] args) {
+	public static void main(String[] args) { // create and show frame/game
 		myJFrame frame = new myJFrame();
 		frame.show();
 		frame.startGame();
@@ -17,12 +17,11 @@ public class Main {
 }
 class myJFrame extends JFrame {
 	myJPanel panel;
-	// menuPage menu;
 	int maxX;
 	int maxY;
 	// game speeds
 	static final int GAME_SPEED = 5;
-	static final int tps = 1000 / GAME_SPEED;
+	static final int tps = 1000 / GAME_SPEED; // ticks per second
 
 	// circle sizes
 	static final int NOTE_SIZE = 50;
@@ -59,7 +58,7 @@ class myJFrame extends JFrame {
 		maxX = (int)getSize().getWidth();
 		maxY = (int)getSize().getHeight();
 
-		System.out.println(maxX + " " + maxY);
+		// System.out.println(maxX + " " + maxY);
 		// NOTE_SIZE = (int)(((maxX + maxY) / 2) * 0.1);
 		// CIRCLE_SIZE = (int)(NOTE_SIZE * 1.2);
 	}
@@ -73,14 +72,13 @@ class myJFrame extends JFrame {
 	// }
 
 	class KeyList implements KeyListener {
-		boolean up, down, left, right, enter, space;
 		public void keyPressed(KeyEvent e) {
 			switch(e.getKeyCode()) {
-				case 27:
+				case 27: // ESC
 				case KeyEvent.VK_E:
-					if (!panel.stats)
+					if (!panel.stats) // show stats
 						panel.stats = true;
-					else
+					else // exit
 						System.exit(0);
 					break;
 			}
@@ -89,15 +87,15 @@ class myJFrame extends JFrame {
 		public void keyTyped(KeyEvent e) {
 			// Point mouse = MouseInfo.getPointerInfo().getLocation();
 			switch (e.getKeyChar()) {
-				case 'z':
+				case 'z': // hit circle
 				case 'Z':
 				case 'x':
 				case 'X':
-					if (panel.menu) {
+					if (panel.menu) { // stop showing menu
 						panel.menu = false;
 						break;
 					}
-					panel.notecheck(e);
+					panel.notecheck(e); // call method to check if hit note
 					break;
 			}
 		}
@@ -106,22 +104,24 @@ class myJFrame extends JFrame {
 		public void mousePressed(MouseEvent e) {}
 		public void mouseReleased(MouseEvent e) {}
 		public void mouseClicked(MouseEvent e) {
-			if (panel.menu) {
+			if (panel.menu) { // stop showing menu
 				panel.menu = false;
 				return;
 			}
-			panel.notecheck(e);
+			panel.notecheck(e); // call method to check if hit note
 		}
 		public void mouseEntered(MouseEvent e) {}
 		public void mouseExited(MouseEvent e) {}
 	}
 	
 
-	class myJPanel extends JPanel {
+	class myJPanel extends JPanel { // basis for game
 		KeyList KL;
 		myJFrame frame;
-		ArrayList<Beat> notes;
-		int song;
+		ArrayList<Beat> notes; // arraylist of circles to hit
+		int song; // kind of redundant - used to pick a map/song
+
+		// scoring
         int score;
 		int combo;
 		int maxCombo = 0;
@@ -139,13 +139,15 @@ class myJFrame extends JFrame {
 		BufferedImage logo;
 		BufferedImage[] ranks;
 		int temp;
+		
+		// booleans for pages
 		boolean menu;
 		boolean stats;
 
 		public myJPanel(KeyList KL1, myJFrame frame1, int s) {
 			KL = KL1;	
 			frame = frame1;
-			ranks = new BufferedImage[7];
+			ranks = new BufferedImage[7]; // add ranking images
 			try {
 				logo = ImageIO.read(new File("logo.png"));
 				ranks[0] = ImageIO.read(new File("./rank/ssrank.png"));
@@ -166,7 +168,7 @@ class myJFrame extends JFrame {
 			ticks = 0;
 
             notes = new ArrayList<>();
-			if (s == 1) {
+			if (s == 1) { // fill up arraylist with circles/notes
 				song1(notes);
 			}
 			numNotes = notes.size();
@@ -175,10 +177,10 @@ class myJFrame extends JFrame {
 			menu = true;
 			stats = false;
 
-			temp = metronome;
+			temp = metronome; // redundant
 		}
 
-		public void playSong1() {
+		public void playSong1() { // play .wav file - stackoverflow
 			try {
 				AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File("./Senbonzakura.wav").getAbsoluteFile());
 				Clip clip = AudioSystem.getClip();
@@ -191,53 +193,54 @@ class myJFrame extends JFrame {
 			}
 		}
 
-		public void notecheck(MouseEvent e) {
+		public void notecheck(MouseEvent e) { // for mouseEvent
             Beat n;
-            for (int i = 0; i < notes.size(); i++) {
+            for (int i = 0; i < notes.size(); i++) { // check all notes
                 n = notes.get(i);
-				if (!n.hit)
+				if (!n.hit) // if not hit already, check
 			    	n.isHit(e.getX(), e.getY(), currentTicks);
             }
 		}
-		public void notecheck(KeyEvent e) {
-			Point mouse = MouseInfo.getPointerInfo().getLocation();
+		public void notecheck(KeyEvent e) { // for keyEvent
+			Point mouse = MouseInfo.getPointerInfo().getLocation(); // get mouse location
             Beat n;
-            for (int i = 0; i < notes.size(); i++) {
+            for (int i = 0; i < notes.size(); i++) { // check all notes
                 n = notes.get(i);
-				if (!n.hit)
+				if (!n.hit) // if not hit already, check
 			    	n.isHit((int)mouse.getX(), (int)mouse.getY(), currentTicks);
             }
 		}
-        public int convertToTicks(int s, int t) {
+        public int convertToTicks(int s, int t) { // helper method
             return ((tps) * s) + t;
         }
 
 		public void startGame() {
-			while (menu) {
+			while (menu) { // in menu page
 				try {Thread.sleep(1);}
 				catch (Exception e) {}
 				repaint();
 			}
 
-			if (song == 1)
+			if (song == 1) // start playing song
 				playSong1();
 
-			long previous = System.currentTimeMillis();
+			// variables for timing system
+			long previous = System.currentTimeMillis(); // previous time
 			long current;
 
-			while (!stats) {
+			while (!stats) { // actual game page
 				try {Thread.sleep(1);}
 				catch(Exception e) {}
 				// if (menu) {
 				// 	repaint();
 				// 	continue;
 				// }
-				current = System.currentTimeMillis();
-				while ((current - previous) >= GAME_SPEED) {
-					repaint();
+				current = System.currentTimeMillis(); // current time
+				while ((current - previous) >= GAME_SPEED) { // if passed a tick
+					repaint(); // update panel + add to ticks
 					currentTicks++;
 					ticks++;
-					if (ticks >= (tps)) {
+					if (ticks >= (tps)) { // update ticks + seconds
 						ticks = 0;
 						seconds++;
 					}
@@ -257,13 +260,14 @@ class myJFrame extends JFrame {
 		public void paintComponent(Graphics g) {
 			super.paintComponent(g);
 
-			if (menu) {
-				int width = (int)(maxX * 0.2);
+			if (menu) { // in menu page
+				int width = (int)(maxX * 0.2); // coords
 				int logoX = (int)(maxX * 0.4);
 				int logoY = (int)(maxY * 0.08);
 				int center = (int)(maxX * 0.5);
-				g.drawImage(logo, logoX, logoY, width, width, this);
+				g.drawImage(logo, logoX, logoY, width, width, this); // draw logo
 
+				// all the text
 				String text = "Note: You will need audio to play.";
 				int tempY = logoY + width + 70;
 				g.setColor(new Color(199, 0, 73));
