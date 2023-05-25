@@ -29,7 +29,7 @@ class myJFrame extends JFrame {
 	static final int C_DECREASE = 3;
 
 	// hit values
-	static final int[] hitWindow2 = {65 / GAME_SPEED, 125 / GAME_SPEED, 170 / GAME_SPEED};
+	static final int[] hitWindow2 = {80 / GAME_SPEED, 140 / GAME_SPEED, 200 / GAME_SPEED};
 	static final int metronome = 78;
 	static final int offset = 187;
 	// originally: 68, 124, 180 ms
@@ -58,7 +58,7 @@ class myJFrame extends JFrame {
 		maxX = (int)getSize().getWidth();
 		maxY = (int)getSize().getHeight();
 
-		// System.out.println(maxX + " " + maxY);
+		System.out.println(maxX + " " + maxY);
 		// NOTE_SIZE = (int)(((maxX + maxY) / 2) * 0.1);
 		// CIRCLE_SIZE = (int)(NOTE_SIZE * 1.2);
 	}
@@ -169,7 +169,7 @@ class myJFrame extends JFrame {
 
             notes = new ArrayList<>();
 			if (s == 1) { // fill up arraylist with circles/notes
-				song1(notes);
+				songtest(notes);
 			}
 			numNotes = notes.size();
 			System.out.println(numNotes);
@@ -203,6 +203,7 @@ class myJFrame extends JFrame {
 		}
 		public void notecheck(KeyEvent e) { // for keyEvent
 			Point mouse = MouseInfo.getPointerInfo().getLocation(); // get mouse location
+			// System.out.println("notes.add(new Note(" + (int)mouse.getX() + ", " + (int)mouse.getY() + ", " + seconds + ", " + ticks + ", 1));");
             Beat n;
             for (int i = 0; i < notes.size(); i++) { // check all notes
                 n = notes.get(i);
@@ -618,7 +619,8 @@ class myJFrame extends JFrame {
 				g2.setColor(new Color(255, 255, 255, 255 - (6 * scoreAnim)));
 			else // in between
 				g2.setColor(Color.white);
-            g2.drawString(String.valueOf(order), x - 7, y + 11);
+			String o = order + "";
+            g2.drawString(o, x - (7 * o.length()), y + 11);
             g2.setStroke(new BasicStroke(8));
 			g2.drawOval(x - r + 4, y - r + 4, dia - 8, dia - 8);
 		}
@@ -628,11 +630,10 @@ class myJFrame extends JFrame {
 			int y1 = Math.abs(my - y);
 			double distance = Math.pow(x1, 2) + Math.pow(y1, 2);
 			distance = Math.sqrt(distance); // distance between mouse and circle radius
+			int diffTicks = gameTicks - hitTick; // human error
+			diffTicks = Math.abs(diffTicks);
 
-			if (distance <= r) { // mouse inside the circle
-				int diffTicks = gameTicks - hitTick; // human error
-				System.out.println("Note " + order + ": " + diffTicks + "\t" + c_r);
-				diffTicks = Math.abs(diffTicks);
+			if (distance <= r && c_r < 70) { // mouse inside the circle
 
 				if (diffTicks <= hitWindow2[0]) { // 300 pts
 					scoring = 300;
@@ -649,6 +650,8 @@ class myJFrame extends JFrame {
 					hit = true;
 					playHitSound();
 				}
+				if (hitTick > 11630)
+					System.out.println("Note " + order + ": " + diffTicks + "\t" + scoring);
             }
 		}
 
@@ -680,6 +683,11 @@ class myJFrame extends JFrame {
 	// }
 
 	// songs
+	public void songtest(ArrayList<Beat> notes) {
+		song1(notes);
+
+	}
+
 	public void song1(ArrayList<Beat> notes) { // arraylist of songs
 		// every 78 ticks = 1 beat
 		// abt 154 bpm
@@ -697,7 +705,7 @@ class myJFrame extends JFrame {
 		notes.add(new Note(1000, 600, 17, 190, 2)); // 3610
 		notes.add(new Note(900, 500, 18, 90, 3)); // 3700
 		notes.add(new Note(800, 400, 18, 160, 4)); // 3780
-		notes.add(new Note(600, 400, 19, 30, 5)); // 3850
+		notes.add(new Note(600, 400, 19, 10, 5)); // 3850
 		notes.add(new Note(400, 400, 19, 100, 6)); // 3920
 		notes.add(new Note(400, 600, 20, 80, 7)); // 4000
 		notes.add(new Note(200, 600, 22, 10, 1)); // 4480
@@ -713,30 +721,71 @@ class myJFrame extends JFrame {
 		notes.add(new Note(300, 100, 32, 80, 7)); // 6400
 		notes.add(new Note(400, 100, 32, 150, 8)); // 6480
 		notes.add(new Note(500, 100, 33, 30, 9)); // 6550
-		notes.add(new Note(300, 200, 34, 100, 1)); // 6860
-		notes.add(new Note(500, 100, 35, 40, 2)); // 7020
-		notes.add(new Note(700, 300, 35, 190, 3)); // 7170
-		notes.add(new Note(500, 500, 36, 120, 4)); // 7320
-		notes.add(new Note(700, 500, 38, 60, 1)); // 7642
-		notes.add(new Note(700, 100, 39, 180, 2)); // 7954
-		notes.add(new Note(900, 100, 41, 100, 3)); // 8266
-		notes.add(new Note(1000, 100, 43, 20, 4)); // 8578
-		notes.add(new Note(900, 200, 44, 110, 5)); // 8890
-		notes.add(new Note(900, 300, 46, 20, 6)); // 9200
+		notes.add(new Note(300, 200, 34, 70, 1)); // 6860
+		notes.add(new Note(500, 100, 35, 10, 2)); // 7020
+		notes.add(new Note(700, 300, 35, 160, 3)); // 7170
+		notes.add(new Note(500, 500, 36, 90, 4)); // 7320
+		notes.add(new Note(700, 500, 38, 30, 1)); // 7642
+		notes.add(new Note(700, 100, 39, 160, 2)); // 7954
+		notes.add(new Note(900, 100, 41, 70, 3)); // 8266
+		notes.add(new Note(1000, 100, 43, 0, 4)); // 8578
+		notes.add(new Note(900, 200, 44, 80, 5)); // 8890
+		notes.add(new Note(900, 300, 46, 0, 6)); // 9200
 		notes.add(new Note(900, 400, 47, 110, 7)); // 9510
 		notes.add(new Note(900, 500, 49, 20, 8)); // 9820
-		notes.add(new Note(600, 500, 49, 170, 1)); // 9970
-		notes.add(new Note(300, 300, 50, 130, 2)); // 10130
-		notes.add(new Note(300, 400, 52, 0, 3)); // 10400
-		notes.add(new Note(400, 500, 52, 100, 5)); // 10470
-		notes.add(new Note(500, 400, 52, 150, 6)); // 10550
-		notes.add(new Note(500, 300, 53, 100, 7)); // 10700
-		notes.add(new Note(600, 300, 55, 10, 1)); // 11010
-		notes.add(new Note(700, 300, 56, 120, 2)); // 11320
-		notes.add(new Note(900, 300, 58, 30, 3)); // 11630
-		// notes.add(new Note(900, 300, 55, 10, 8)); // 11010
-		// notes.add(new Note(900, 300, 55, 10, 8)); // 11010
-		// notes.add(new Note(900, 300, 55, 10, 8)); // 11010
-		// notes.add(new Note(900, 300, 55, 10, 8)); // 11010
+		notes.add(new Note(600, 500, 49, 190, 1)); // 9970
+		notes.add(new Note(300, 300, 50, 150, 2)); // 10130
+		notes.add(new Note(300, 400, 52, 30, 3)); // 10400
+		notes.add(new Note(400, 500, 52, 130, 4)); // 10470
+		notes.add(new Note(500, 400, 53, 0, 5)); // 10550
+		notes.add(new Note(500, 300, 53, 80, 6)); // 10630
+		notes.add(new Note(600, 300, 55, 70, 1)); // 11010
+		notes.add(new Note(700, 300, 56, 180, 2)); // 11320
+		notes.add(new Note(900, 300, 58, 90, 3)); // 11630
+		notes.add(new Note(650, 300, 60, 6, 1));
+		notes.add(new Note(800, 325, 60, 163, 2));
+		notes.add(new Note(700, 325, 61, 41, 3));
+		notes.add(new Note(500, 350, 62, 67, 5));
+		notes.add(new Note(375, 350, 62, 141, 6));
+		notes.add(new Note(275, 350, 63, 22, 7));
+		notes.add(new Note(275, 450, 63, 179, 8));
+		notes.add(new Note(430, 450, 64, 131, 1));
+		notes.add(new Note(530, 450, 65, 9, 2));
+		notes.add(new Note(650, 430, 65, 100, 3));
+		notes.add(new Note(800, 440, 66, 60, 4));
+		notes.add(new Note(950, 425, 67, 2, 5));
+		notes.add(new Note(950, 350, 67, 79, 6));
+		notes.add(new Note(930, 280, 67, 165, 7));
+		notes.add(new Note(750, 280, 68, 119, 8));
+		notes.add(new Note(650, 280, 68, 197, 9));
+		notes.add(new Note(515, 285, 69, 75, 10));
+		notes.add(new Note(400, 300, 69, 150, 11));
+		notes.add(new Note(300, 300, 70, 29, 12));
+		notes.add(new Note(300, 450, 70, 179, 13));
+		notes.add(new Note(550, 300, 71, 136, 1));
+		notes.add(new Note(780, 275, 72, 101, 2));
+		notes.add(new Note(430, 275, 73, 58, 3));
+		notes.add(new Note(450, 425, 73, 130, 4));
+		notes.add(new Note(700, 460, 74, 12, 5));
+		notes.add(new Note(880, 460, 74, 90, 6));
+		notes.add(new Note(850, 375, 74, 165, 7));
+		notes.add(new Note(825, 250, 75, 120, 1));
+		notes.add(new Note(950, 385, 76, 94, 2));
+		notes.add(new Note(920, 450, 76, 158, 3));
+		notes.add(new Note(775, 500, 77, 33, 4));
+		notes.add(new Note(600, 485, 77, 106, 5));
+		notes.add(new Note(450, 475, 77, 179, 6));
+		notes.add(new Note(300, 450, 78, 34, 7));
+		notes.add(new Note(350, 200, 79, 100, 1));
+		notes.add(new Note(635, 165, 79, 184, 2));
+		notes.add(new Note(775, 165, 80, 65, 3));
+		notes.add(new Note(885, 180, 80, 133, 4));
+		notes.add(new Note(900, 225, 81, 15, 5));
+		notes.add(new Note(1050, 300, 81, 83, 6));
+		notes.add(new Note(1075, 375, 81, 159, 7));
+		notes.add(new Note(1065, 450, 82, 36, 8));
+		notes.add(new Note(975, 550, 82, 118, 9));
+		notes.add(new Note(800, 585, 83, 78, 10)); // break time
+		notes.add(new Note(600, 60, 97, 0, 1)); // start workin
 	}
 }
